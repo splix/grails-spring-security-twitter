@@ -1,0 +1,16 @@
+import org.codehaus.groovy.grails.plugins.springsecurity.twitter.TwitterUser
+${userImport}
+
+class ${className} implements TwitterUser {
+
+    int userId
+    String screenName
+    String secret
+    String token
+
+	static belongsTo = [${userConnectionProperty}: ${userClassName}]
+
+	static constraints = {
+		userId unique: true
+	}
+}

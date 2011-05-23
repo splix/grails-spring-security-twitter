@@ -6,8 +6,6 @@ security {
         language = "en_US"
         button.text = "Login with Twitter"
 
-        domainClass = 'TwitterUser'
-
         registration {
             autocreate = true
             createAccountUri = '/login/twitterCreateAccount'
@@ -19,5 +17,10 @@ security {
             provider = "twitterAuthProvider"
         }
 
+
+        domain {
+            classname = 'TwitterUser'
+            connectionPropertyName = 'user'
+        }
     }
 }

@@ -6,7 +6,7 @@ package com.the6hours.grails.springsecurity.twitter
  * @since 02.05.11
  * @author Igor Artamonov (http://igorartamonov.com)
  */
-interface TwitterUser {
+interface TwitterUserDomain {
 
     public int getUserId()
     public void setUserId(int userId)

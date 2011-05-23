@@ -16,7 +16,7 @@ class DefaultConnectedTwitterAuthDao implements TwitterAuthDao {
     String userDomainClassName
     String rolesPropertyName
 
-    TwitterUser findUser(String username) {
+    TwitterUserDomain findUser(String username) {
 		Class<?> User = grailsApplication.getDomainClass(domainClassName).clazz
 		User.withTransaction { status ->
 			def user = User.findWhere(username: username)
@@ -25,9 +25,9 @@ class DefaultConnectedTwitterAuthDao implements TwitterAuthDao {
         return null
     }
 
-    TwitterUser create(TwitterAuthToken token) {
-        Class<TwitterUser> userClass = grailsApplication.getDomainClass(domainClassName).clazz
-        TwitterUser user = userClass.newInstance()
+    TwitterUserDomain create(TwitterAuthToken token) {
+        Class<TwitterUserDomain> userClass = grailsApplication.getDomainClass(domainClassName).clazz
+        TwitterUserDomain user = userClass.newInstance()
         user.screenName = token.screenName
         user.token = token.token
         user.tokenSecret = token.tokenSecret
@@ -38,18 +38,18 @@ class DefaultConnectedTwitterAuthDao implements TwitterAuthDao {
         return user
     }
 
-    void update(TwitterUser user) {
+    void update(TwitterUserDomain user) {
         Class<?> User = grailsApplication.getDomainClass(domainClassName).clazz
         User.withTransaction { status ->
             user.save()
         }
     }
 
-    Object getPrincipal(TwitterUser user) {
+    Object getPrincipal(TwitterUserDomain user) {
         return user.properties[connectionPropertyName]
     }
 
-    String[] getRoles(TwitterUser user) {
+    String[] getRoles(TwitterUserDomain user) {
         return user.getAt(connectionPropertyName).getAt(rolesPropertyName)
     }
 }

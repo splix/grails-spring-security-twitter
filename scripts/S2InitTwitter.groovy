@@ -9,9 +9,26 @@ templateAttributes = [:]
 templateDir = "$springSecurityTwitterPluginDir/src/templates"
 appDir = "$basedir/grails-app"
 templateEngine = new SimpleTemplateEngine()
+pluginConfig = [:]
 
 target(s2InitTwitter: 'Initializes Twitter artifacts for the Spring Security Twitter plugin') {
 	depends(checkVersion, configureProxy, packageApp, classpath)
+
+    def configFile = new File("$springSecurityTwitterPluginDir/grails-app/conf/DefaultTwitterSecurityConfig.groovy")
+	if (configFile.exists()) {
+        def conf = new ConfigSlurper().parse(configFile.text)
+        println "Creating app based on configuration:"
+        pluginConfig.each { name, config ->
+		    println "$name = ${config.flatten()}"
+        }
+
+        pluginConfig = conf.security.twitter
+        pluginConfig.each { name, config ->
+		    println "$name = $config"
+        }
+	} else {
+        ant.echo message: "ERROR $configFile.path not found"
+    }
 
 	configure()
 	copyData()
@@ -29,16 +46,23 @@ private void configure() {
 	String userClassName
 	(userPackageName, userClassName) = splitClassName(userClassFullName)
 
-	String userConnectionProperty = conf.userLookup.usernamePropertyName
-	checkValue userConnectionProperty, 'domain.userConnectionProperty'
+	String userConnectionProperty = pluginConfig.domain.connectionPropertyName
+	checkValue userConnectionProperty, 'twitter.domain.connectionPropertyName'
+
+    String domainClassName = pluginConfig.domain.classname
+    checkValue domainClassName, 'twitter.domain.classname'
 
     String userImport = "import $userClassFullName"
 
 	templateAttributes = [userClassFullName: userClassFullName,
 	                      userClassName: userClassName,
-                          className: 'TwitterUser',
+                          domainClassName: domainClassName,
                           userConnectionProperty: userConnectionProperty,
                           userImport: userImport]
+
+    templateAttributes.entrySet().each {
+        println "$it.key = $it.value"
+    }
 }
 
 private void copyData() {
@@ -46,7 +70,7 @@ private void copyData() {
 		"$appDir/i18n/spring-security-twitter.messages.properties"
 
 	generateFile "$templateDir/TwitterUser.groovy.connected.template",
-	             "$appDir/domain/TwitterUser.groovy"
+	             "$appDir/domain/${templateAttributes.domainClassName}.groovy"
 }
 
 packageToDir = { String packageName ->
@@ -121,8 +145,8 @@ splitClassName = { String fullName ->
 }
 
 checkValue = { String value, String attributeName ->
-	if (!value) {
-		ant.echo message: "\nERROR: Cannot generate; grails.plugins.springsecurity.$attributeName isn't set"
+	if (value == null || value.length() == 0 || value == '{}') {
+		ant.echo message: "\nERROR: Cannot generate; $attributeName set as $value"
 		System.exit 1
 	}
 }

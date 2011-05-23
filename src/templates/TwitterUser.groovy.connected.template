@@ -1,11 +1,11 @@
-import org.codehaus.groovy.grails.plugins.springsecurity.twitter.TwitterUser
+import com.the6hours.grails.springsecurity.twitter.TwitterUserDomain
 ${userImport}
 
-class ${className} implements TwitterUser {
+class ${domainClassName} implements TwitterUserDomain {
 
     int userId
     String screenName
-    String secret
+    String tokenSecret
     String token
 
 	static belongsTo = [${userConnectionProperty}: ${userClassName}]

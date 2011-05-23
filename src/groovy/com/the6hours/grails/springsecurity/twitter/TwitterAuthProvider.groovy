@@ -20,7 +20,7 @@ class TwitterAuthProvider implements AuthenticationProvider {
     Authentication authenticate(Authentication authentication) {
         TwitterAuthToken token = authentication
 
-        TwitterUser user = authDao.findUser(token.screenName)
+        TwitterUserDomain user = authDao.findUser(token.screenName)
 
         if (user == null) {
             //log.debug "Create new twitter user"

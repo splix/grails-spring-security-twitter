@@ -8,13 +8,13 @@ package com.the6hours.grails.springsecurity.twitter
  */
 public interface TwitterAuthDao {
 
-    TwitterUser findUser(String username)
+    TwitterUserDomain findUser(String username)
 
-    TwitterUser create(TwitterAuthToken token)
+    TwitterUserDomain create(TwitterAuthToken token)
 
-    void update(TwitterUser user)
+    void update(TwitterUserDomain user)
 
-    Object getPrincipal(TwitterUser user)
+    Object getPrincipal(TwitterUserDomain user)
 
-    String[] getRoles(TwitterUser user)
+    String[] getRoles(TwitterUserDomain user)
 }

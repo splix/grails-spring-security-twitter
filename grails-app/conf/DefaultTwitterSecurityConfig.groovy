@@ -2,9 +2,15 @@ security {
 
 	twitter {
 
-        appId = "Invalid"
+        appId = "APP_ID"
+        apiKey = "API_KEY"
+
         language = "en_US"
         button.text = "Login with Twitter"
+
+        filter {
+            processUrl = '/j_spring_twitter_security_check'
+        }
 
         registration {
             autocreate = true

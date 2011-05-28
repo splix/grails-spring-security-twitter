@@ -70,14 +70,14 @@ class SpringSecurityTwitterGrailsPlugin {
             authDao = ref('twitterConnectedAuthDao')
         }
 
-        twitterAuthFilter(TwitterAuthFilter, '/j_spring_twitter_security_check') {
+        twitterAuthFilter(TwitterAuthFilter, conf.twitter.filter.processUrl) {
             rememberMeServices = ref('rememberMeServices')
             authenticationManager = ref('authenticationManager')
             authenticationSuccessHandler = ref('authenticationSuccessHandler')
             authenticationFailureHandler = ref('authenticationFailureHandler')
             authenticationDetailsSource = ref('authenticationDetailsSource')
             sessionAuthenticationStrategy = ref('sessionAuthenticationStrategy')
-            filterProcessesUrl =  '/j_spring_twitter_security_check' // not configurable
+            filterProcessesUrl =  conf.twitter.filter.processUrl
         }
 
     }

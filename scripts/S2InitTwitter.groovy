@@ -37,9 +37,25 @@ target(s2InitTwitter: 'Initializes Twitter artifacts for the Spring Security Twi
 
 private void fillConfig() {
     def config = [:]
-    String code = "twitter.appId"
+    String code
+
+/*
+    code = "twitter.appId"
     ant.input(message: "Enter your Twitter appId", addproperty: code)
     config['appId'] = ant.antProject.properties[code]
+*/
+
+    code = "twitter.app.key"
+    ant.input(message: "Enter your Twitter API Key", addproperty: code)
+    config['app.key'] = ant.antProject.properties[code]
+
+    code = "twitter.app.consumerKey"
+    ant.input(message: "Enter your Twitter API Consumer Key", addproperty: code)
+    config['app.consumerKey'] = ant.antProject.properties[code]
+
+    code = "twitter.app.consumerSecret"
+    ant.input(message: "Enter your Twitter API Consumer Secret", addproperty: code)
+    config['app.consumerSecret'] = ant.antProject.properties[code]
 
     def configFile = new File(appDir, 'conf/Config.groovy')
     if (configFile.exists()) {

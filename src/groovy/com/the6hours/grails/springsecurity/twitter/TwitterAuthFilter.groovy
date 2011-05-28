@@ -16,19 +16,23 @@ import twitter4j.TwitterException
  * @since 09.05.11
  * @author Igor Artamonov (http://igorartamonov.com)
  */
-class TwitterAuthFilter extends AbstractAuthenticationProcessingFilter{
+class TwitterAuthFilter extends AbstractAuthenticationProcessingFilter {
+
+    public static final String PREFIX = "twitterAuth."
+    public static final String TWITTER_OBJ = PREFIX + "twitter"
+    public static final String REQUEST_TOKEN = PREFIX + "requestToken"
 
     TwitterAuthFilter(String url) {
         super(url)
     }
 
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
-        Twitter twitter = (Twitter) request.getSession().getAttribute("twitter")
+        Twitter twitter = (Twitter) request.getSession().getAttribute(TWITTER_OBJ)
         if (twitter == null) {
             //log.warn "Access twitter callback, but there are no twitter in session"
             return null
         }
-        RequestToken requestToken = (RequestToken) request.getSession().getAttribute("requestToken")
+        RequestToken requestToken = (RequestToken) request.getSession().getAttribute(REQUEST_TOKEN)
         if (requestToken == null) {
             //log.warn "No requestToken for twitter callback"
             return null
@@ -40,7 +44,7 @@ class TwitterAuthFilter extends AbstractAuthenticationProcessingFilter{
         }
         try {
             AccessToken token = twitter.getOAuthAccessToken(requestToken, verifier)
-            request.getSession().removeAttribute("requestToken")
+            request.getSession().removeAttribute(REQUEST_TOKEN)
             TwitterAuthToken securityToken = new TwitterAuthToken(
                     userId: token.userId,
                     screenName: token.screenName,

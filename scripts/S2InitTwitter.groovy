@@ -32,6 +32,23 @@ target(s2InitTwitter: 'Initializes Twitter artifacts for the Spring Security Twi
 
 	configure()
 	copyData()
+    fillConfig()
+}
+
+private void fillConfig() {
+    def config = [:]
+    String code = "twitter.appId"
+    ant.input(message: "Enter your Twitter appId", addproperty: code)
+    config['appId'] = ant.antProject.properties[code]
+
+    def configFile = new File(appDir, 'conf/Config.groovy')
+    if (configFile.exists()) {
+        configFile.withWriterAppend {
+            config.entrySet().each { Map.Entry conf ->
+                it.writeLine "\ngrails.plugins.springsecurity.twitter.$conf.key='$conf.value'"
+            }
+        }
+    }
 }
 
 private void configure() {
@@ -160,4 +177,3 @@ copyFile = { String from, String to ->
 }
 
 setDefaultTarget 's2InitTwitter'
-

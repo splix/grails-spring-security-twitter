@@ -8,8 +8,8 @@ package com.the6hours.grails.springsecurity.twitter
  */
 interface TwitterUserDomain {
 
-    public int getUserId()
-    public void setUserId(int userId)
+    public int getUid()
+    public void setUid(int userId)
 
     public String getScreenName()
     public void setScreenName(String screenName)

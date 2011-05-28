@@ -31,7 +31,7 @@ class DefaultConnectedTwitterAuthDao implements TwitterAuthDao {
         user.screenName = token.screenName
         user.token = token.token
         user.tokenSecret = token.tokenSecret
-        user.userId = token.userId
+        user.uid = token.userId
 
         update(user)
 

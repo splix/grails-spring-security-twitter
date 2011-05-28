@@ -1,5 +1,8 @@
 import com.the6hours.grails.springsecurity.twitter.TwitterAuthProvider
 import com.the6hours.grails.springsecurity.twitter.TwitterAuthFilter
+import org.codehaus.groovy.grails.plugins.springsecurity.SecurityFilterPosition
+import com.the6hours.grails.springsecurity.twitter.DefaultConnectedTwitterAuthDao
+import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 
 /* Copyright 2006-2010 the original author or authors.
 *
@@ -37,7 +40,7 @@ class SpringSecurityTwitterGrailsPlugin {
     def documentation = "http://grails.org/plugin/spring-security-twitter"
 
     def doWithSpring = {
-        def SpringSecurityUtils = classLoader.loadClass('org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils')
+        //def SpringSecurityUtils = classLoader.loadClass('org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils')
 
         def conf = SpringSecurityUtils.securityConfig
         if (!conf) {
@@ -51,22 +54,30 @@ class SpringSecurityTwitterGrailsPlugin {
         // have to get again after overlaying DefaultTwitterSecurityConfig
         conf = SpringSecurityUtils.securityConfig
 
-        SpringSecurityUtils.registerProvider conf.beans.provider
-        SpringSecurityUtils.registerFilter conf.beans.filter, SecurityFilterPosition.OPENID_FILTER
+        SpringSecurityUtils.registerProvider 'twitterAuthProvider'
+        SpringSecurityUtils.registerFilter 'twitterAuthFilter', SecurityFilterPosition.OPENID_FILTER
 
+        twitterConnectedAuthDao(DefaultConnectedTwitterAuthDao) {
+            domainClassName = conf.twitter.domain.classname
+            connectionPropertyName = conf.twitter.domain.connectionPropertyName
+            userDomainClassName = conf.userLookup.userDomainClassName
+            rolesPropertyName = conf.userLookup.authoritiesPropertyName
 
-        twitterAuthProvider(TwitterAuthProvider) {
-            userDetailsService = ref('userDetailsService')
+            grailsApplication = ref('grailsApplication')
         }
 
-        twitterAuthFilter(TwitterAuthFilter) {
+        twitterAuthProvider(TwitterAuthProvider) {
+            authDao = ref('twitterConnectedAuthDao')
+        }
+
+        twitterAuthFilter(TwitterAuthFilter, '/j_spring_twitter_security_check') {
             rememberMeServices = ref('rememberMeServices')
             authenticationManager = ref('authenticationManager')
             authenticationSuccessHandler = ref('authenticationSuccessHandler')
             authenticationFailureHandler = ref('authenticationFailureHandler')
             authenticationDetailsSource = ref('authenticationDetailsSource')
             sessionAuthenticationStrategy = ref('sessionAuthenticationStrategy')
-            filterProcessesUrl = '/j_spring_twitter_security_check' // not configurable
+            filterProcessesUrl =  '/j_spring_twitter_security_check' // not configurable
         }
 
     }

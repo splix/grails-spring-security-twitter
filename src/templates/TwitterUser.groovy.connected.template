@@ -3,7 +3,7 @@ ${userImport}
 
 class ${domainClassName} implements TwitterUserDomain {
 
-    int userId
+    int uid
     String screenName
     String tokenSecret
     String token

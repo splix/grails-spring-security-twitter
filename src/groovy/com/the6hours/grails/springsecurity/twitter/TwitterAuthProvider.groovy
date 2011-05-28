@@ -34,7 +34,7 @@ class TwitterAuthProvider implements AuthenticationProvider {
             }
         }
 
-        List<GrantedAuthority> roles = authDao().getRoles(user).collect {
+        List<GrantedAuthority> roles = authDao.getRoles(user).collect {
             new GrantedAuthorityImpl(it)
         }
 

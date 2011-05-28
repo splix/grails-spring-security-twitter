@@ -8,5 +8,6 @@ Currently it's only initial version, it **doesn't work**
 Requirements
 ------------
 
-Required plugins:
-* spring-security-core
+ * grails 1.3
+ * spring-security-core plugin 1.1
+ * twitter4j

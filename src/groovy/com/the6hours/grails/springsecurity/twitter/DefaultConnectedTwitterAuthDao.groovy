@@ -1,7 +1,10 @@
 package com.the6hours.grails.springsecurity.twitter
 
+import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import org.springframework.security.core.authority.GrantedAuthorityImpl
+
 /**
- * TODO
+ * DAO for independent twitter user domain object
  *
  * @since 02.05.11
  * @author Igor Artamonov (http://igorartamonov.com)
@@ -19,7 +22,7 @@ class DefaultConnectedTwitterAuthDao implements TwitterAuthDao {
     TwitterUserDomain findUser(String username) {
 		Class<?> User = grailsApplication.getDomainClass(domainClassName).clazz
 		User.withTransaction { status ->
-			def user = User.findWhere(username: username)
+			def user = User.findWhere(screenName: username)
             return user
 		}
         return null
@@ -32,9 +35,41 @@ class DefaultConnectedTwitterAuthDao implements TwitterAuthDao {
         user.token = token.token
         user.tokenSecret = token.tokenSecret
         user.uid = token.userId
-
+        user[connectionPropertyName] = createAppUser(token)
         update(user)
 
+        return user
+    }
+
+    Object createAppUser(TwitterAuthToken token) {
+        //TODO wtf???
+        def conf = SpringSecurityUtils.securityConfig
+        Class<?> MainUser = grailsApplication.getDomainClass(userDomainClassName).clazz
+        def user = MainUser.newInstance()
+        user.password = token.token
+        user.username = token.screenName
+        MainUser.withTransaction { status ->
+            user.save()
+        }
+        conf.twitter.autoCreate.roles.collect {
+            Class<?> Role = grailsApplication.getDomainClass(conf.authority.className).clazz
+            def role = Role.findByAuthority(it)
+            if (!role) {
+                role = Role.newInstance()
+                role.authority = it
+                Role.withTransaction { status ->
+                    role.save()
+                }
+                println "Role created $role"
+            }
+            return role
+        }.each { role ->
+            println "Connect ${role?.authority} to $user"
+            Class<?> PersonRole = grailsApplication.getDomainClass(conf.userLookup.authorityJoinClassName).clazz
+            PersonRole.withTransaction { status ->
+                PersonRole.create(user, role, false)
+            }
+        }
         return user
     }
 
@@ -46,10 +81,14 @@ class DefaultConnectedTwitterAuthDao implements TwitterAuthDao {
     }
 
     Object getPrincipal(TwitterUserDomain user) {
-        return user.properties[connectionPropertyName]
+        return user.getAt(connectionPropertyName)
     }
 
-    String[] getRoles(TwitterUserDomain user) {
-        return user.getAt(connectionPropertyName).getAt(rolesPropertyName)
+    def getRoles(TwitterUserDomain user) {
+        def conf = SpringSecurityUtils.securityConfig
+        Class<?> PersonRole = grailsApplication.getDomainClass(conf.userLookup.authorityJoinClassName).clazz
+        PersonRole.withTransaction { status ->
+            return getPrincipal(user)?.getAt(rolesPropertyName)
+        }
     }
 }

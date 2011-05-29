@@ -45,6 +45,7 @@ class TwitterAuthFilter extends AbstractAuthenticationProcessingFilter {
         try {
             AccessToken token = twitter.getOAuthAccessToken(requestToken, verifier)
             request.getSession().removeAttribute(REQUEST_TOKEN)
+            request.getSession().removeAttribute(TWITTER_OBJ)
             TwitterAuthToken securityToken = new TwitterAuthToken(
                     userId: token.userId,
                     screenName: token.screenName,

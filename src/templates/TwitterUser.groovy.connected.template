@@ -11,6 +11,6 @@ class ${domainClassName} implements TwitterUserDomain {
 	static belongsTo = [${userConnectionProperty}: ${userClassName}]
 
 	static constraints = {
-		userId unique: true
+		uid unique: true
 	}
 }

@@ -8,6 +8,11 @@ security {
         language = "en_US"
         button.text = "Login with Twitter"
 
+        autoCreate {
+            active = true
+            roles = ['ROLE_USER', 'ROLE_TWITTER']
+        }
+
         filter {
             processUrl = '/j_spring_twitter_security_check'
         }

@@ -16,5 +16,5 @@ public interface TwitterAuthDao {
 
     Object getPrincipal(TwitterUserDomain user)
 
-    String[] getRoles(TwitterUserDomain user)
+    def getRoles(TwitterUserDomain user)
 }

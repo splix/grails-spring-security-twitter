@@ -27,14 +27,9 @@ class TwitterAuthTagLib {
         String authFilter = conf.filter.processUrl
         String logoutUrl = SpringSecurityUtils.securityConfig.logout.filterProcessesUrl
 
-        Twitter twitter = session[TwitterAuthFilter.TWITTER_OBJ]
-        if (twitter == null) {
-            TwitterFactory factory = new TwitterFactory()
-            twitter = factory.getInstance()
-            println "key = $conf.app.consumerKey, secret = $conf.app.consumerSecret"
-            twitter.setOAuthConsumer(conf.app.consumerKey, conf.app.consumerSecret)
-            session[TwitterAuthFilter.TWITTER_OBJ] = twitter
-        }
+        TwitterFactory factory = new TwitterFactory()
+        Twitter twitter = factory.getInstance()
+        twitter.setOAuthConsumer(conf.app.consumerKey, conf.app.consumerSecret)
 
         RequestToken requestToken = session[TwitterAuthFilter.REQUEST_TOKEN]
         if (requestToken == null) {

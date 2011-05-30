@@ -9,6 +9,7 @@ import twitter4j.auth.RequestToken
 import org.apache.commons.lang.StringUtils
 import twitter4j.auth.AccessToken
 import twitter4j.TwitterException
+import twitter4j.TwitterFactory
 
 /**
  * TODO
@@ -19,19 +20,20 @@ import twitter4j.TwitterException
 class TwitterAuthFilter extends AbstractAuthenticationProcessingFilter {
 
     public static final String PREFIX = "twitterAuth."
-    public static final String TWITTER_OBJ = PREFIX + "twitter"
     public static final String REQUEST_TOKEN = PREFIX + "requestToken"
+
+    TwitterFactory factory = new TwitterFactory()
+    String consumerKey
+    String consumerSecret
 
     TwitterAuthFilter(String url) {
         super(url)
     }
 
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
-        Twitter twitter = (Twitter) request.getSession().getAttribute(TWITTER_OBJ)
-        if (twitter == null) {
-            //log.warn "Access twitter callback, but there are no twitter in session"
-            return null
-        }
+        Twitter twitter = factory.getInstance()
+        twitter.setOAuthConsumer(consumerKey, consumerSecret)
+
         RequestToken requestToken = (RequestToken) request.getSession().getAttribute(REQUEST_TOKEN)
         if (requestToken == null) {
             //log.warn "No requestToken for twitter callback"
@@ -45,7 +47,6 @@ class TwitterAuthFilter extends AbstractAuthenticationProcessingFilter {
         try {
             AccessToken token = twitter.getOAuthAccessToken(requestToken, verifier)
             request.getSession().removeAttribute(REQUEST_TOKEN)
-            request.getSession().removeAttribute(TWITTER_OBJ)
             TwitterAuthToken securityToken = new TwitterAuthToken(
                     userId: token.userId,
                     screenName: token.screenName,

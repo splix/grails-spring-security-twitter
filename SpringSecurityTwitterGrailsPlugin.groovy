@@ -78,6 +78,8 @@ class SpringSecurityTwitterGrailsPlugin {
             authenticationDetailsSource = ref('authenticationDetailsSource')
             sessionAuthenticationStrategy = ref('sessionAuthenticationStrategy')
             filterProcessesUrl =  conf.twitter.filter.processUrl
+            consumerKey = conf.twitter.app.consumerKey
+            consumerSecret = conf.twitter.app.consumerSecret
         }
 
     }

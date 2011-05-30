@@ -3,9 +3,7 @@ package grails.plugins.springsecurity
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import twitter4j.Twitter
 import com.the6hours.grails.springsecurity.twitter.TwitterAuthFilter
-import twitter4j.TwitterImpl
 import twitter4j.TwitterFactory
-import org.apache.taglibs.standard.extra.spath.AbsolutePath
 import twitter4j.auth.RequestToken
 
 /**

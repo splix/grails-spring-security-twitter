@@ -61,7 +61,9 @@ class TwitterAuthFilter extends AbstractAuthenticationProcessingFilter {
         } catch (TwitterException e) {
             //log.error "Failed processing twitter callback", e
         }
-        return null
+        TwitterAuthToken auth = new TwitterAuthToken()
+        auth.authenticated = false
+        return auth
     }
 
 }

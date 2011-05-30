@@ -1,5 +1,7 @@
 package com.the6hours.grails.springsecurity.twitter
 
+import org.springframework.security.core.GrantedAuthority
+
 /**
  * TODO
  *
@@ -16,5 +18,5 @@ public interface TwitterAuthDao {
 
     Object getPrincipal(TwitterUserDomain user)
 
-    def getRoles(TwitterUserDomain user)
+    Collection<GrantedAuthority> getRoles(TwitterUserDomain user)
 }

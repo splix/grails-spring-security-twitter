@@ -2,6 +2,7 @@ package com.the6hours.grails.springsecurity.twitter
 
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import org.springframework.security.core.authority.GrantedAuthorityImpl
+import org.springframework.security.core.GrantedAuthority
 
 /**
  * DAO for independent twitter user domain object
@@ -84,11 +85,14 @@ class DefaultConnectedTwitterAuthDao implements TwitterAuthDao {
         return user.getAt(connectionPropertyName)
     }
 
-    def getRoles(TwitterUserDomain user) {
+    Collection<GrantedAuthority> getRoles(TwitterUserDomain user) {
         def conf = SpringSecurityUtils.securityConfig
         Class<?> PersonRole = grailsApplication.getDomainClass(conf.userLookup.authorityJoinClassName).clazz
-        PersonRole.withTransaction { status ->
+        def roles = PersonRole.withTransaction { status ->
             return getPrincipal(user)?.getAt(rolesPropertyName)
+        }
+        return roles.collect {
+            new GrantedAuthorityImpl(it.authority)
         }
     }
 }

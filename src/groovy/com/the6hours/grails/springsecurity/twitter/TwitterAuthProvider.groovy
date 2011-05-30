@@ -34,16 +34,7 @@ class TwitterAuthProvider implements AuthenticationProvider {
             }
         }
 
-        def rolesData = authDao.getRoles(user)
-        Collection<GrantedAuthority> roles;
-        if (rolesData instanceof String[]) {
-            roles = rolesData.collect {
-                new GrantedAuthorityImpl(it)
-            }
-        } else {
-            roles = rolesData
-        }
-
+        Collection<GrantedAuthority> roles = authDao.getRoles(user)
         UserDetails userDetails = new User(user.screenName, token.tokenSecret, true, true, true, true, roles)
         token.details = userDetails
         token.authorities = userDetails.getAuthorities()

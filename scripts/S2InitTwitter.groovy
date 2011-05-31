@@ -7,7 +7,9 @@ includeTargets << grailsScript('_GrailsBootstrap')
 overwriteAll = false
 templateAttributes = [:]
 templateDir = "$springSecurityTwitterPluginDir/src/templates"
+resourceDir = "$springSecurityTwitterPluginDir/src/resources"
 appDir = "$basedir/grails-app"
+webDir = "$basedir/web-app"
 templateEngine = new SimpleTemplateEngine()
 pluginConfig = [:]
 
@@ -101,6 +103,10 @@ private void configure() {
 private void copyData() {
 	copyFile "$templateDir/spring-security-twitter.messages.properties.template",
 		"$appDir/i18n/spring-security-twitter.messages.properties"
+    copyFile "$resourceDir/sign-in-with-twitter-d.png",
+        "$webDir/images/sign-in-with-twitter-d.png"
+    copyFile "$resourceDir/twitter-auth.css",
+        "$webDir/css/twitter-auth.css"
 
 	generateFile "$templateDir/TwitterUser.groovy.connected.template",
 	             "$appDir/domain/${templateAttributes.domainClassName}.groovy"

@@ -39,14 +39,14 @@ class TwitterAuthTagLib {
         String authUrl = requestToken.authenticationURL
         String text = "Connect with Twitter"
 
-        out << '<span id="twitter-login"></span>'
+        out << '<span class="twitter-login">'
         out << '<a href="'
         out << authUrl
-        out << '" class="twitter-connect twitter-connect-medium" title="'
+        out << '" class="twitter-button" title="'
         out << text
         out << '" onclick="twitterConnect(); return false;"><span>'
         out << text
-        out << '</span></a>'
+        out << '</span></a></span>'
         out << '<script type="text/javascript">'
         out << '   function twitterConnect() {'
         out << "     document.window.href = '$authUrl'';"

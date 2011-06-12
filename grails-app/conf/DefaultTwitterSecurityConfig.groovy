@@ -2,11 +2,16 @@ security {
 
 	twitter {
 
-        appId = "APP_ID"
-        apiKey = "API_KEY"
+        app {
+            id = "APP_ID"
+            key = "APP_KEY"
+            consumerKey = "CONSUMER_KEY"
+            consumerSecret = "CONSUMER_KEY"
+        }
 
         language = "en_US"
         button.text = "Login with Twitter"
+        popup = true
 
         autoCreate {
             active = true
@@ -17,17 +22,10 @@ security {
             processUrl = '/j_spring_twitter_security_check'
         }
 
-        registration {
-            autocreate = true
-            createAccountUri = '/login/twitterCreateAccount'
-            roleNames = ['ROLE_USER']
-        }
-
         beans {
             filter = "twitterAuthFilter"
             provider = "twitterAuthProvider"
         }
-
 
         domain {
             classname = 'TwitterUser'

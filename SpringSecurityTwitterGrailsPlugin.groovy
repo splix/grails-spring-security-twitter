@@ -3,6 +3,7 @@ import com.the6hours.grails.springsecurity.twitter.TwitterAuthFilter
 import org.codehaus.groovy.grails.plugins.springsecurity.SecurityFilterPosition
 import com.the6hours.grails.springsecurity.twitter.DefaultConnectedTwitterAuthDao
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler
 
 /* Copyright 2006-2010 the original author or authors.
 *
@@ -20,7 +21,7 @@ import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 */
 class SpringSecurityTwitterGrailsPlugin {
     // the plugin version
-    def version = "0.1"
+    def version = "0.2"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "1.3.3 > *"
 
@@ -80,6 +81,9 @@ class SpringSecurityTwitterGrailsPlugin {
             filterProcessesUrl =  conf.twitter.filter.processUrl
             consumerKey = conf.twitter.app.consumerKey
             consumerSecret = conf.twitter.app.consumerSecret
+            if (conf.twitter.popup) {
+                authenticationSuccessHandler = new SimpleUrlAuthenticationSuccessHandler(conf.twitter.filter.processPopupUrl)
+            }
         }
 
     }

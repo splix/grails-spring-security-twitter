@@ -20,6 +20,7 @@ security {
 
         filter {
             processUrl = '/j_spring_twitter_security_check'
+            processPopupUrl = '/twitterAuth/popup'
         }
 
         beans {

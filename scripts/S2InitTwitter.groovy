@@ -8,6 +8,7 @@ overwriteAll = false
 templateAttributes = [:]
 templateDir = "$springSecurityTwitterPluginDir/src/templates"
 resourceDir = "$springSecurityTwitterPluginDir/src/resources"
+pluginAppDir = "$springSecurityTwitterPluginDir/grails-app"
 appDir = "$basedir/grails-app"
 webDir = "$basedir/web-app"
 templateEngine = new SimpleTemplateEngine()
@@ -35,6 +36,10 @@ target(s2InitTwitter: 'Initializes Twitter artifacts for the Spring Security Twi
 	configure()
 	copyData()
     fillConfig()
+
+    ant.echo message: "Please add following line into your layout's head:"
+    ant.echo message: "  "
+    ant.echo message: '  <link rel="stylesheet" href="${resource(dir:\'css\',file:\'twitter-auth.css\')}" />'
 }
 
 private void fillConfig() {
@@ -62,8 +67,9 @@ private void fillConfig() {
     def configFile = new File(appDir, 'conf/Config.groovy')
     if (configFile.exists()) {
         configFile.withWriterAppend {
+            it.writeLine "\n"
             config.entrySet().each { Map.Entry conf ->
-                it.writeLine "\ngrails.plugins.springsecurity.twitter.$conf.key='$conf.value'"
+                it.writeLine "grails.plugins.springsecurity.twitter.$conf.key='$conf.value'"
             }
         }
     }
@@ -110,6 +116,13 @@ private void copyData() {
 
 	generateFile "$templateDir/TwitterUser.groovy.connected.template",
 	             "$appDir/domain/${templateAttributes.domainClassName}.groovy"
+    generateFile "$templateDir/TwitterAuthController.groovy.template",
+                 "$appDir/controllers/TwitterAuthController.groovy"
+
+    ant.mkdir(dir:"$appDir/views/twitterAuth")
+    ant.copy(todir: "$appDir/views/twitterAuth") {
+        fileset dir:"$pluginAppDir/views/twitterAuth"
+    }
 }
 
 packageToDir = { String packageName ->

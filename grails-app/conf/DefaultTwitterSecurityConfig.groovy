@@ -11,7 +11,7 @@ security {
 
         language = "en_US"
         button.text = "Login with Twitter"
-        popup = true
+        popup = false
 
         autoCreate {
             active = true

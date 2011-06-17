@@ -57,15 +57,13 @@ class DefaultConnectedTwitterAuthDao implements TwitterAuthDao {
             def role = Role.findByAuthority(it)
             if (!role) {
                 role = Role.newInstance()
-                role.authority = it
+                role.properties[conf.authority.nameField] = it
                 Role.withTransaction { status ->
                     role.save()
                 }
-                println "Role created $role"
             }
             return role
         }.each { role ->
-            println "Connect ${role?.authority} to $user"
             Class<?> PersonRole = grailsApplication.getDomainClass(conf.userLookup.authorityJoinClassName).clazz
             PersonRole.withTransaction { status ->
                 PersonRole.create(user, role, false)
@@ -92,7 +90,7 @@ class DefaultConnectedTwitterAuthDao implements TwitterAuthDao {
             return getPrincipal(user)?.getAt(rolesPropertyName)
         }
         return roles.collect {
-            new GrantedAuthorityImpl(it.authority)
+            new GrantedAuthorityImpl(it[conf.authority.nameField])
         }
     }
 }

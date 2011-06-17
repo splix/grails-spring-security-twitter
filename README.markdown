@@ -35,7 +35,7 @@ Press Ctrl+C when it asks for your SVN password. And please remember path to bui
 And install it:
 
 ```
-cd %YOUR PROJECT DRI%
+cd %YOUR PROJECT DIR%
 grails install-plugin %PATH TO PLUGIN ZIP%
 grails s2-init-twitter
 ```

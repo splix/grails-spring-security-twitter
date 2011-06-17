@@ -11,7 +11,7 @@ Requirements
 
  * grails 1.3+
  * spring-security-core plugin 1.1+
- * twitter4j
+ * twitter4j (will be downloaded automatically)
 
 How to install
 --------------
@@ -41,3 +41,21 @@ grails s2-init-twitter
 ```
 
 Done
+
+How to use
+----------
+
+Add CSS into your view layout:
+
+```html
+<link rel="stylesheet" href="${resource(dir:'css',file:'twitter-auth.css')}" />
+```
+
+Put sign-in button:
+
+```html
+<twitterAuth:button/>
+```
+
+after clicking this button user will be authenticated through twitter, and redirected to main page (configurable
+at spring-security-core)

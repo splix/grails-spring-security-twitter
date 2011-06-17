@@ -37,9 +37,14 @@ target(s2InitTwitter: 'Initializes Twitter artifacts for the Spring Security Twi
 	copyData()
     fillConfig()
 
+    ant.echo message: "**********************************************************************************************  "
     ant.echo message: "Please add following line into your layout's head:"
     ant.echo message: "  "
     ant.echo message: '  <link rel="stylesheet" href="${resource(dir:\'css\',file:\'twitter-auth.css\')}" />'
+    ant.echo message: "  "
+    ant.echo message: "How to use:"
+    ant.echo message: "  put <twitterAuth:button/> tag into your GSP, where you want to sign in user with twitter"
+    ant.echo message: "**********************************************************************************************  "
 }
 
 private void fillConfig() {

@@ -21,7 +21,7 @@ Install spring-security-plugin:
 grails install-plugin spring-security-core
 ```
 
-Download package from github: [grails-spring-security-twitter-0.2.zip](http://github.com/downloads/splix/grails-spring-security-twitter/grails-spring-security-twitter-0.2.zip).
+Download package from github: [grails-spring-security-twitter-0.3.zip](http://github.com/downloads/splix/grails-spring-security-twitter/grails-spring-security-twitter-0.3.zip).
 And install it:
 
 ```
@@ -34,17 +34,10 @@ Done
 How to use
 ----------
 
-Add CSS into your view layout:
+For documentation see: <a href="http://splix.github.com/grails-spring-security-twitter/"></a>
 
-```html
-<link rel="stylesheet" href="${resource(dir:'css',file:'twitter-auth.css')}" />
-```
 
-Put sign-in button:
+Questions?
+----------
 
-```html
-<twitterAuth:button/>
-```
-
-after clicking this button user will be authenticated through twitter, and redirected to main page (configurable
-at spring-security-core)
+Have any questions? Contact me: igor@artamonov.ru

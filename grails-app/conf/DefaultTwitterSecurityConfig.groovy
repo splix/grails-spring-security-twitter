@@ -24,8 +24,6 @@ security {
         }
 
         beans {
-            filter = "twitterAuthFilter"
-            provider = "twitterAuthProvider"
         }
 
         domain {

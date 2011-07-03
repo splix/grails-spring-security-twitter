@@ -20,8 +20,9 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 * limitations under the License.
 */
 class SpringSecurityTwitterGrailsPlugin {
+
     // the plugin version
-    def version = "0.2"
+    def version = "0.3"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "1.3.3 > *"
 
@@ -55,34 +56,46 @@ class SpringSecurityTwitterGrailsPlugin {
         // have to get again after overlaying DefaultTwitterSecurityConfig
         conf = SpringSecurityUtils.securityConfig
 
-        SpringSecurityUtils.registerProvider 'twitterAuthProvider'
-        SpringSecurityUtils.registerFilter 'twitterAuthFilter', SecurityFilterPosition.OPENID_FILTER
+        if (!conf.twitter.bean.dao) {
+            twitterConnectedAuthDao(DefaultConnectedTwitterAuthDao) {
+                domainClassName = conf.twitter.domain.classname
+                connectionPropertyName = conf.twitter.domain.connectionPropertyName
+                userDomainClassName = conf.userLookup.userDomainClassName
+                rolesPropertyName = conf.userLookup.authoritiesPropertyName
 
-        twitterConnectedAuthDao(DefaultConnectedTwitterAuthDao) {
-            domainClassName = conf.twitter.domain.classname
-            connectionPropertyName = conf.twitter.domain.connectionPropertyName
-            userDomainClassName = conf.userLookup.userDomainClassName
-            rolesPropertyName = conf.userLookup.authoritiesPropertyName
-
-            grailsApplication = ref('grailsApplication')
+                grailsApplication = ref('grailsApplication')
+            }
+            conf.twitter.bean.dao = 'twitterConnectedAuthDao'
         }
 
-        twitterAuthProvider(TwitterAuthProvider) {
-            authDao = ref('twitterConnectedAuthDao')
+        if (conf.twitter.bean.provider) {
+            SpringSecurityUtils.registerProvider conf.twitter.bean.provider.toString()
+        } else {
+            SpringSecurityUtils.registerProvider 'twitterAuthProvider'
+            conf.twitter.bean.provider = 'twitterAuthProvider'
+            twitterAuthProvider(TwitterAuthProvider) {
+                authDao = ref(conf.twitter.bean.dao)
+            }
         }
 
-        twitterAuthFilter(TwitterAuthFilter, conf.twitter.filter.processUrl) {
-            rememberMeServices = ref('rememberMeServices')
-            authenticationManager = ref('authenticationManager')
-            authenticationSuccessHandler = ref('authenticationSuccessHandler')
-            authenticationFailureHandler = ref('authenticationFailureHandler')
-            authenticationDetailsSource = ref('authenticationDetailsSource')
-            sessionAuthenticationStrategy = ref('sessionAuthenticationStrategy')
-            filterProcessesUrl =  conf.twitter.filter.processUrl
-            consumerKey = conf.twitter.app.consumerKey
-            consumerSecret = conf.twitter.app.consumerSecret
-            if (conf.twitter.popup) {
-                authenticationSuccessHandler = new SimpleUrlAuthenticationSuccessHandler(conf.twitter.filter.processPopupUrl)
+        if (conf.twitter.bean.filter) {
+            SpringSecurityUtils.registerFilter conf.twitter.bean.filter.toString(), SecurityFilterPosition.OPENID_FILTER
+        } else {
+            SpringSecurityUtils.registerFilter 'twitterAuthFilter', SecurityFilterPosition.OPENID_FILTER
+            conf.twitter.bean.filter = 'twitterAuthFilter'
+            twitterAuthFilter(TwitterAuthFilter, conf.twitter.filter.processUrl) {
+                rememberMeServices = ref('rememberMeServices')
+                authenticationManager = ref('authenticationManager')
+                authenticationSuccessHandler = ref('authenticationSuccessHandler')
+                authenticationFailureHandler = ref('authenticationFailureHandler')
+                authenticationDetailsSource = ref('authenticationDetailsSource')
+                sessionAuthenticationStrategy = ref('sessionAuthenticationStrategy')
+                filterProcessesUrl =  conf.twitter.filter.processUrl
+                consumerKey = conf.twitter.app.consumerKey
+                consumerSecret = conf.twitter.app.consumerSecret
+                if (conf.twitter.popup) {
+                    authenticationSuccessHandler = new SimpleUrlAuthenticationSuccessHandler(conf.twitter.filter.processPopupUrl)
+                }
             }
         }
 

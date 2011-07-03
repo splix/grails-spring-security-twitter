@@ -62,7 +62,7 @@ private void fillConfig() {
     config['app.key'] = ant.antProject.properties[code]
 
     code = "twitter.app.consumerKey"
-    ant.input(message: "Enter your Twitter API Consumer Key", addproperty: code)
+    ant.input(message: "Enter your Twitter API Consumer Key", addproperty: code, defaultvalue: config['app.key'])
     config['app.consumerKey'] = ant.antProject.properties[code]
 
     code = "twitter.app.consumerSecret"

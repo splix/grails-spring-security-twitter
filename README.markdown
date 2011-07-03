@@ -34,7 +34,7 @@ Done
 How to use
 ----------
 
-For documentation see: <a href="http://splix.github.com/grails-spring-security-twitter/"></a>
+For documentation see: <a href="http://splix.github.com/grails-spring-security-twitter/">http://splix.github.com/grails-spring-security-twitter/</a>
 
 
 Questions?

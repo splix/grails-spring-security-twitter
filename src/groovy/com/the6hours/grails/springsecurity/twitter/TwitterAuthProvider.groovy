@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.User
 class TwitterAuthProvider implements AuthenticationProvider {
 
     TwitterAuthDao authDao
+    TwitterAuthListener listener
 
     Authentication authenticate(Authentication authentication) {
         TwitterAuthToken token = authentication
@@ -25,12 +26,18 @@ class TwitterAuthProvider implements AuthenticationProvider {
         if (user == null) {
             //log.debug "Create new twitter user"
             user = authDao.create(token)
+            if (listener) {
+                listener.userCreated(user)
+            }
         }  else {
             if (user.token != token.token || user.tokenSecret != token.tokenSecret) {
                 //log.info "update twitter user $user.screenName"
                 user.token = token.token
                 user.tokenSecret = token.tokenSecret
                 authDao.update(user)
+                if (listener) {
+                    listener.tokenUpdated(user)
+                }
             }
         }
 

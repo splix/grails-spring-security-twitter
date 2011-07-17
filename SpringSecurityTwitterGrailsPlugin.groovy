@@ -75,6 +75,9 @@ class SpringSecurityTwitterGrailsPlugin {
             conf.twitter.bean.provider = 'twitterAuthProvider'
             twitterAuthProvider(TwitterAuthProvider) {
                 authDao = ref(conf.twitter.bean.dao)
+                if (conf.twitter.bean.listener) {
+                    listener = ref(conf.twitter.bean.listener)
+                }
             }
         }
 

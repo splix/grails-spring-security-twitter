@@ -24,7 +24,7 @@ class SpringSecurityTwitterGrailsPlugin {
     // the plugin version
     def version = "0.3"
     // the version or versions of Grails the plugin is designed for
-    def grailsVersion = "1.3.3 > *"
+    def grailsVersion = "1.3.7 > *"
 
     Map dependsOn = ['springSecurityCore': '1.1.2 > *']
 

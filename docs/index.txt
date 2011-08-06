@@ -1,0 +1,80 @@
+Grails plugin for Twitter Authentication, as extension to Grails Spring Security Core plugin
+
+h1. Information
+
+Sources: [https://github.com/splix/grails-spring-security-twitter]
+
+h2. Requirements:
+ * grails 1.3.7
+ * spring-security-core plugin 1.1+
+ * twitter4j (will be downloaded automatically)
+
+h2. How to install:
+{code}
+grails install-plugin spring-security-core
+grails install-plugin spring-security-twitter
+grails s2-init-twitter
+{code}
+
+h1. Usage:
+
+Add CSS into your view layout:
+{code}
+<link rel="stylesheet" href="${resource(dir:'css',file:'twitter-auth.css')}" />
+{code}
+
+Put sign-in button:
+{code}
+<twitterAuth:button/>
+{code}
+
+after clicking this button user will be authenticated through twitter, and redirected to main page (configurable at spring-security-core)
+
+Note that Twitter requires to use some domain name for your app (so 127.0.0.1 isn't working here), to achieve this you can add following line:
+{code}
+127.0.0.1 mytestdomain.local
+{code}
+into your /etc/hosts file (%SystemRoot%\system32\drivers\etc\ for Windows). Where mytestdomain.local is a domain name you would like to use for local testing.
+
+h1. Configuration
+
+After plugin install you'll get twitter keys stored in your grails-app/conf/Config.groovy, that can be modified later.
+
+Default config:
+{code}
+security {
+   twitter {
+
+        language = "en_US"
+        button.text = "Login with Twitter"
+        popup = false
+
+        autoCreate {
+            active = true
+            roles = ["ROLE_USER", "ROLE_TWITTER"]
+        }
+
+        filter {
+            processUrl = "/j_spring_twitter_security_check"
+            processPopupUrl = "/twitterAuth/popup"
+        }
+
+        domain {
+            classname = "TwitterUser"
+            connectionPropertyName = "user"
+        }
+    }
+}
+{code}
+
+h2. How to
+
+h3. How to use my own DAO
+
+You have to create a class, that implements com.the6hours.grails.springsecurity.twitter.TwitterAuthDao, put it as a bean into spring context (see docs) add following configuration into your Config.groovy:
+
+{code}
+grails.plugins.springsecurity.twitter.beans.dao='myOwnDaoBean'
+{code}
+
+

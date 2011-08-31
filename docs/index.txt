@@ -12,6 +12,7 @@ h2. Requirements:
 h2. How to install:
 {code}
 grails install-plugin spring-security-core
+grails s2-quickstart
 grails install-plugin spring-security-twitter
 grails s2-init-twitter
 {code}
@@ -74,7 +75,7 @@ h3. How to use my own DAO
 You have to create a class, that implements com.the6hours.grails.springsecurity.twitter.TwitterAuthDao, put it as a bean into spring context (see docs) add following configuration into your Config.groovy:
 
 {code}
-grails.plugins.springsecurity.twitter.beans.dao='myOwnDaoBean'
+grails.plugins.springsecurity.twitter.bean.dao='myOwnDaoBean'
 {code}
 
 

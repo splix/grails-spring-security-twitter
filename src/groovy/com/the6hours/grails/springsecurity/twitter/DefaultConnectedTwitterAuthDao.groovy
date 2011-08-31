@@ -22,11 +22,12 @@ class DefaultConnectedTwitterAuthDao implements TwitterAuthDao {
 
     TwitterUserDomain findUser(String username) {
 		Class<?> User = grailsApplication.getDomainClass(domainClassName).clazz
-		User.withTransaction { status ->
-			def user = User.findWhere(screenName: username)
-            return user
-		}
-        return null
+        def user = null
+        User.withTransaction { status ->
+            user = User.findWhere(screenName: username)
+            user?.user // load the User object to memory prevent LazyInitializationException
+        }
+        return user
     }
 
     TwitterUserDomain create(TwitterAuthToken token) {

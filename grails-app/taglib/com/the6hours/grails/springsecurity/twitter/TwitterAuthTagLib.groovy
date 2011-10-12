@@ -69,7 +69,7 @@ class TwitterAuthTagLib {
         } else {
             out << '<script type="text/javascript">'
             out << '   function twitterConnect() {'
-            out << "     window.href = '$authUrl'';"
+            out << "     window.href = '$authUrl';"
             out << '   }'
             out << '</script>'
         }

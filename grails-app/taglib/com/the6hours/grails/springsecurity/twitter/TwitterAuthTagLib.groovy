@@ -63,13 +63,13 @@ class TwitterAuthTagLib {
             out << "     window.open('$authUrl', 'twitter_auth', 'width=640,height=500,toolbar=no,directories=no,status=no,menubar=no,copyhistory=no');"
             out << '   }'
             out << '   function loggedIn() {'
-            out << "     window.href = '$successUrl';"
+            out << "     window.location.href = '$successUrl';"
             out << '   }'
             out << '</script>'
         } else {
             out << '<script type="text/javascript">'
             out << '   function twitterConnect() {'
-            out << "     window.href = '$authUrl';"
+            out << "     window.location.href = '$authUrl';"
             out << '   }'
             out << '</script>'
         }

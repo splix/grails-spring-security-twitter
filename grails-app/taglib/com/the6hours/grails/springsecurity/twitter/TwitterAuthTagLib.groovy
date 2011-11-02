@@ -42,6 +42,7 @@ class TwitterAuthTagLib {
                 session.setAttribute(TwitterAuthFilter.REQUEST_TOKEN, requestToken)
             } catch (TwitterException e) {
                 log.error "Twitter error: $e.message"
+                log.error "Used Consumer Key / Secret: $conf.app.consumerKey / $conf.app.consumerSecret"
                 log.error "Skipping twitter auth button"
                 return
             }

@@ -22,7 +22,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 class SpringSecurityTwitterGrailsPlugin {
 
     // the plugin version
-    def version = "0.3.3"
+    def version = "0.3.4"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "1.3.7 > *"
 

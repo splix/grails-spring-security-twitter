@@ -6,6 +6,7 @@ import com.the6hours.grails.springsecurity.twitter.TwitterAuthFilter
 import twitter4j.TwitterFactory
 import twitter4j.auth.RequestToken
 import org.apache.log4j.Logger
+import twitter4j.TwitterException
 
 /**
  * Twitter Auth tags
@@ -34,10 +35,16 @@ class TwitterAuthTagLib {
 
         RequestToken requestToken = session.getAttribute(TwitterAuthFilter.REQUEST_TOKEN)
         if (requestToken == null) {
-            log.info "Prepare new requestToken, put as " + TwitterAuthFilter.REQUEST_TOKEN
-            String callbackUrl = g.resource(file: authFilter, absolute: true)
-            requestToken = twitter.getOAuthRequestToken(callbackUrl)
-            session.setAttribute(TwitterAuthFilter.REQUEST_TOKEN, requestToken)
+            try {
+                log.info "Prepare new requestToken, put as " + TwitterAuthFilter.REQUEST_TOKEN
+                String callbackUrl = g.resource(file: authFilter, absolute: true)
+                requestToken = twitter.getOAuthRequestToken(callbackUrl)
+                session.setAttribute(TwitterAuthFilter.REQUEST_TOKEN, requestToken)
+            } catch (TwitterException e) {
+                log.error "Twitter error: $e.message"
+                log.error "Skipping twitter auth button"
+                return
+            }
         } else {
             log.info "Reusing existing requestToken"
         }

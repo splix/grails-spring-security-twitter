@@ -34,15 +34,15 @@ class TwitterAuthTagLib {
 
         RequestToken requestToken = session.getAttribute(TwitterAuthFilter.REQUEST_TOKEN)
         if (requestToken == null) {
-            println "Prepare new requestToken, put as " + TwitterAuthFilter.REQUEST_TOKEN
+            log.info "Prepare new requestToken, put as " + TwitterAuthFilter.REQUEST_TOKEN
             String callbackUrl = g.resource(file: authFilter, absolute: true)
             requestToken = twitter.getOAuthRequestToken(callbackUrl)
             session.setAttribute(TwitterAuthFilter.REQUEST_TOKEN, requestToken)
         } else {
-            println "Reusing existing requestToken"
+            log.info "Reusing existing requestToken"
         }
 
-        println "Request Token: " + session.getAttribute(TwitterAuthFilter.REQUEST_TOKEN)
+        log.debug "Request Token: " + session.getAttribute(TwitterAuthFilter.REQUEST_TOKEN)
 
         String authUrl = requestToken.authenticationURL
         String text = "Connect with Twitter"

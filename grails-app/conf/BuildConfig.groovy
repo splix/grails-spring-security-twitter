@@ -21,7 +21,7 @@ grails.project.dependency.resolution = {
         mavenRepo "http://twitter4j.org/maven2"
     }
     dependencies {
-        runtime('org.twitter4j:twitter4j-core:2.2.2'){
+        runtime('org.twitter4j:twitter4j-core:2.2.5'){
             excludes 'commons-logging'
         }
 

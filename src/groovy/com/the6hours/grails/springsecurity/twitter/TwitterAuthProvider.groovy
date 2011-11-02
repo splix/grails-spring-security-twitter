@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.GrantedAuthorityImpl
 import org.springframework.security.core.userdetails.User
+import org.apache.log4j.Logger
 
 /**
  * TODO
@@ -14,6 +15,8 @@ import org.springframework.security.core.userdetails.User
  * @author Igor Artamonov (http://igorartamonov.com)
  */
 class TwitterAuthProvider implements AuthenticationProvider {
+
+    private static final Logger log = Logger.getLogger(this)
 
     TwitterAuthDao authDao
     TwitterAuthListener listener
@@ -24,14 +27,14 @@ class TwitterAuthProvider implements AuthenticationProvider {
         TwitterUserDomain user = authDao.findUser(token.screenName)
 
         if (user == null) {
-            //log.debug "Create new twitter user"
+            log.debug "Create new twitter user"
             user = authDao.create(token)
             if (listener) {
                 listener.userCreated(user)
             }
         }  else {
             if (user.token != token.token || user.tokenSecret != token.tokenSecret) {
-                //log.info "update twitter user $user.screenName"
+                log.debug "update twitter user $user.screenName"
                 user.token = token.token
                 user.tokenSecret = token.tokenSecret
                 authDao.update(user)

@@ -8,15 +8,15 @@ import org.springframework.security.core.GrantedAuthority
  * @since 02.05.11
  * @author Igor Artamonov (http://igorartamonov.com)
  */
-public interface TwitterAuthDao {
+public interface TwitterAuthDao<T extends TwitterUserDomain> {
 
-    TwitterUserDomain findUser(String username)
+    T findUser(String username)
 
-    TwitterUserDomain create(TwitterAuthToken token)
+    T create(TwitterAuthToken token)
 
-    void update(TwitterUserDomain user)
+    void update(T user)
 
-    Object getPrincipal(TwitterUserDomain user)
+    Object getPrincipal(T user)
 
-    Collection<GrantedAuthority> getRoles(TwitterUserDomain user)
+    Collection<GrantedAuthority> getRoles(T user)
 }

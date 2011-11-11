@@ -6,9 +6,9 @@ package com.the6hours.grails.springsecurity.twitter
  * @since 18.07.11
  * @author Igor Artamonov (http://igorartamonov.com)
  */
-public interface TwitterAuthListener {
+public interface TwitterAuthListener<T extends TwitterUserDomain> {
 
-    void userCreated(TwitterUserDomain user)
+    void userCreated(T user)
 
-    void tokenUpdated(TwitterUserDomain user)
+    void tokenUpdated(T user)
 }

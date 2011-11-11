@@ -89,15 +89,26 @@ class SpringSecurityTwitterGrailsPlugin {
             twitterAuthFilter(TwitterAuthFilter, conf.twitter.filter.processUrl) {
                 rememberMeServices = ref('rememberMeServices')
                 authenticationManager = ref('authenticationManager')
-                authenticationSuccessHandler = ref('authenticationSuccessHandler')
-                authenticationFailureHandler = ref('authenticationFailureHandler')
                 authenticationDetailsSource = ref('authenticationDetailsSource')
-                sessionAuthenticationStrategy = ref('sessionAuthenticationStrategy')
                 filterProcessesUrl =  conf.twitter.filter.processUrl
                 consumerKey = conf.twitter.app.consumerKey
                 consumerSecret = conf.twitter.app.consumerSecret
-                if (conf.twitter.popup) {
+                if (conf.twitter.sessionAuthenticationStrategy) {
+                    sessionAuthenticationStrategy = ref(conf.twitter.sessionAuthenticationStrategy)
+                } else {
+                    sessionAuthenticationStrategy = ref('sessionAuthenticationStrategy')
+                }
+                if (conf.twitter.authenticationFailureHandler) {
+                    authenticationFailureHandler = ref(conf.twitter.authenticationFailureHandler)
+                } else {
+                    authenticationFailureHandler = ref('authenticationFailureHandler')
+                }
+                if (conf.twitter.authenticationSuccessHandler) {
+                    authenticationSuccessHandler = ref(conf.twitter.authenticationSuccessHandler)
+                } else if (conf.twitter.popup) {
                     authenticationSuccessHandler = new SimpleUrlAuthenticationSuccessHandler(conf.twitter.filter.processPopupUrl)
+                } else {
+                    authenticationSuccessHandler = ref('authenticationSuccessHandler')
                 }
             }
         }

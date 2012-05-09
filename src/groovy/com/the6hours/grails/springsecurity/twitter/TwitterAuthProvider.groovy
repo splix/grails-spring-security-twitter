@@ -20,6 +20,7 @@ class TwitterAuthProvider implements AuthenticationProvider {
 
     TwitterAuthDao authDao
     TwitterAuthListener listener
+    boolean createNew = true
 
     Authentication authenticate(Authentication authentication) {
         TwitterAuthToken token = authentication
@@ -27,14 +28,22 @@ class TwitterAuthProvider implements AuthenticationProvider {
         TwitterUserDomain user = authDao.findUser(token.screenName)
 
         if (user == null) {
+            if (!createNew) {
+              token.authenticated = false
+              return token
+            }
             log.debug "Create new twitter user"
             user = authDao.create(token)
+            if (!user) {
+              token.authenticated = false
+              return token
+            }
             if (listener) {
                 listener.userCreated(user)
             }
-        }  else {
+        } else {
             if (user.token != token.token || user.tokenSecret != token.tokenSecret) {
-                log.debug "update twitter user $user.screenName"
+                log.debug "Update twitter user $user.screenName"
                 user.token = token.token
                 user.tokenSecret = token.tokenSecret
                 authDao.update(user)

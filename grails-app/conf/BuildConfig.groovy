@@ -3,8 +3,9 @@ grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
 //grails.project.war.file = "target/${appName}-${appVersion}.war"
 
-String springSecurityVer = "3.0.4.RELEASE"
-
+String springSecurityVer = "3.0.7.RELEASE"
+grails.release.scm.enabled = false
+grails.project.repos.default = "grailsCentral"
 
 grails.project.dependency.resolution = {
     // inherit Grails' default dependencies

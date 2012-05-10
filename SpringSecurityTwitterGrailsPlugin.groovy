@@ -22,24 +22,27 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 class SpringSecurityTwitterGrailsPlugin {
 
     // the plugin version
-    def version = "0.4"
+    def version = "0.4.2"
     // the version or versions of Grails the plugin is designed for
-    def grailsVersion = "1.3.7 > *"
+    def grailsVersion = "2.0.0 > *"
 
-    Map dependsOn = ['springSecurityCore': '1.1.2 > *']
+    Map dependsOn = ['springSecurityCore': '1.2.7.2 > *']
+    def license = 'APACHE'
 
     // resources that are excluded from plugin packaging
     def pluginExcludes = [
             "grails-app/views/error.gsp"
     ]
 
+    def issueManagement = [ system: "GitHub", url: "https://github.com/splix/grails-spring-security-twitter/issues" ]
+    def scm = [ url: "git@github.com:splix/grails-spring-security-twitter.git" ]
+    def documentation = "http://grails.org/plugin/spring-security-twitter"
+
     String author = 'Igor Artamonov'
     String authorEmail = 'igor@artamonov.ru'
-    String title = 'Twitter authentication for Spring Security plugin'
+    String title = 'Twitter Authentication'
     String description = 'Twitter authentication support for the Spring Security plugin.'
 
-    // URL to the plugin's documentation
-    def documentation = "http://grails.org/plugin/spring-security-twitter"
 
     def doWithSpring = {
         //def SpringSecurityUtils = classLoader.loadClass('org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils')

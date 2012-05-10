@@ -11,6 +11,8 @@ import twitter4j.auth.AccessToken
 import twitter4j.TwitterException
 import twitter4j.TwitterFactory
 import org.apache.log4j.Logger
+import org.springframework.security.authentication.BadCredentialsException
+import org.springframework.security.authentication.DisabledException
 
 /**
  * TODO
@@ -65,16 +67,15 @@ class TwitterAuthFilter extends AbstractAuthenticationProcessingFilter {
             Authentication auth = getAuthenticationManager().authenticate(securityToken)
             if (auth.authenticated) {
                 rememberMeServices.loginSuccess(request, response, auth)
+                log.info "Successful authentication"
+                return auth
+            } else {
+                throw new DisabledException("User is disabled")
             }
-            log.info "Successful authentication"
-            return auth
         } catch (TwitterException e) {
             log.error "Failed processing twitter callback", e
         }
-        log.info "Authentication failed"
-        TwitterAuthToken auth = new TwitterAuthToken()
-        auth.authenticated = false
-        return auth
+        throw new BadCredentialsException("Invalid twitter token")
     }
 
     protected boolean _requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {

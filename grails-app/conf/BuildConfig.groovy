@@ -20,6 +20,7 @@ grails.project.dependency.resolution = {
         grailsHome()
         grailsCentral()
         mavenRepo "http://twitter4j.org/maven2"
+        mavenRepo "http://repo1.maven.org/maven2"
     }
     dependencies {
         runtime('org.twitter4j:twitter4j-core:2.2.5'){

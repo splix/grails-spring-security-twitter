@@ -60,5 +60,6 @@ grails.project.dependency.resolution = {
             export = false
         }
 
+        runtime(':spring-security-core:1.2.7.2')
     }
 }

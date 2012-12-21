@@ -22,7 +22,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 class SpringSecurityTwitterGrailsPlugin {
 
     // the plugin version
-    def version = "0.4.3"
+    def version = "0.4.4"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "2.0.0 > *"
 
@@ -37,6 +37,8 @@ class SpringSecurityTwitterGrailsPlugin {
     def issueManagement = [ system: "GitHub", url: "https://github.com/splix/grails-spring-security-twitter/issues" ]
     def scm = [ url: "git@github.com:splix/grails-spring-security-twitter.git" ]
     def documentation = "http://grails.org/plugin/spring-security-twitter"
+
+	def observe = ["springSecurityCore"]
 
     String author = 'Igor Artamonov'
     String authorEmail = 'igor@artamonov.ru'
@@ -59,7 +61,9 @@ class SpringSecurityTwitterGrailsPlugin {
         // have to get again after overlaying DefaultTwitterSecurityConfig
         conf = SpringSecurityUtils.securityConfig
 
-        if (!conf.twitter.bean.dao) {
+		String twitterDaoName = conf?.twitter?.bean?.dao ?: null
+        if (twitterDaoName == null) {
+			twitterDaoName = 'twitterConnectedAuthDao'
             twitterConnectedAuthDao(DefaultConnectedTwitterAuthDao) {
                 domainClassName = conf.twitter.domain.classname
                 connectionPropertyName = conf.twitter.domain.connectionPropertyName
@@ -68,27 +72,30 @@ class SpringSecurityTwitterGrailsPlugin {
 
                 grailsApplication = ref('grailsApplication')
             }
-            conf.twitter.bean.dao = 'twitterConnectedAuthDao'
-        }
+		} else {
+			log.info("Using provided Twitter Auth DAO bean: $twitterDaoName")
+		}
 
-        if (conf.twitter.bean.provider) {
-            SpringSecurityUtils.registerProvider conf.twitter.bean.provider.toString()
+		String twitterAuthProviderName = conf?.twitter?.bean?.provider ?: null
+        if (twitterAuthProviderName != null) {
+            SpringSecurityUtils.registerProvider twitterAuthProviderName
         } else {
             SpringSecurityUtils.registerProvider 'twitterAuthProvider'
-            conf.twitter.bean.provider = 'twitterAuthProvider'
+            twitterAuthProviderName = 'twitterAuthProvider'
             twitterAuthProvider(TwitterAuthProvider) {
-                authDao = ref(conf.twitter.bean.dao)
+                authDao = ref(twitterDaoName)
                 if (conf.twitter.bean.listener) {
                     listener = ref(conf.twitter.bean.listener)
                 }
             }
         }
 
-        if (conf.twitter.bean.filter) {
-            SpringSecurityUtils.registerFilter conf.twitter.bean.filter.toString(), SecurityFilterPosition.OPENID_FILTER
+		String twitterAuthFilterName = conf?.twitter?.bean?.filter ?: null
+        if (twitterAuthFilterName != null) {
+            SpringSecurityUtils.registerFilter twitterAuthFilterName, SecurityFilterPosition.OPENID_FILTER
         } else {
             SpringSecurityUtils.registerFilter 'twitterAuthFilter', SecurityFilterPosition.OPENID_FILTER
-            conf.twitter.bean.filter = 'twitterAuthFilter'
+            twitterAuthFilterName = 'twitterAuthFilter'
             twitterAuthFilter(TwitterAuthFilter, conf.twitter.filter.processUrl) {
                 rememberMeServices = ref('rememberMeServices')
                 authenticationManager = ref('authenticationManager')
@@ -121,4 +128,8 @@ class SpringSecurityTwitterGrailsPlugin {
     def doWithApplicationContext = { applicationContext ->
     }
 
+	def onConfigChange = { event ->
+		log.info("Config change")
+		SpringSecurityUtils.resetSecurityConfig()
+	}
 }

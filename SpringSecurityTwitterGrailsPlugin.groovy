@@ -128,8 +128,4 @@ class SpringSecurityTwitterGrailsPlugin {
     def doWithApplicationContext = { applicationContext ->
     }
 
-	def onConfigChange = { event ->
-		log.info("Config change")
-		SpringSecurityUtils.resetSecurityConfig()
-	}
 }

@@ -12,7 +12,7 @@ import org.springframework.security.authentication.AbstractAuthenticationToken
  */
 class TwitterAuthToken extends AbstractAuthenticationToken implements Authentication {
 
-    int userId
+    long userId
     String screenName
     String tokenSecret
     String token

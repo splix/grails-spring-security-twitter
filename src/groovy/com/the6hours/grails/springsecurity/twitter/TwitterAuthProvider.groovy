@@ -4,9 +4,9 @@ import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.GrantedAuthority
-import org.springframework.security.core.authority.GrantedAuthorityImpl
 import org.springframework.security.core.userdetails.User
 import org.apache.log4j.Logger
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 
 /**
  * TODO
@@ -19,45 +19,38 @@ class TwitterAuthProvider implements AuthenticationProvider {
     private static final Logger log = Logger.getLogger(this)
 
     TwitterAuthDao authDao
-    TwitterAuthListener listener
     boolean createNew = true
+
+    def facebookAuthService
 
     Authentication authenticate(Authentication authentication) {
         TwitterAuthToken token = authentication
 
-        TwitterUserDomain user = authDao.findUser(token.screenName)
+        Object user = authDao.findUser(token)
 
         if (user == null) {
             if (!createNew) {
-              token.authenticated = false
-              return token
+              throw new UsernameNotFoundException("No user for twitter $token.screenName")
             }
             log.debug "Create new twitter user"
             user = authDao.create(token)
             if (!user) {
-              token.authenticated = false
-              return token
-            }
-            if (listener) {
-                listener.userCreated(user)
+               throw new UsernameNotFoundException("Cannot create user for twitter $token.screenName")
             }
         } else {
-            if (user.token != token.token || user.tokenSecret != token.tokenSecret) {
-                log.debug "Update twitter user $user.screenName"
-                user.token = token.token
-                user.tokenSecret = token.tokenSecret
-                authDao.update(user)
-                if (listener) {
-                    listener.tokenUpdated(user)
-                }
-            }
+            authDao.updateTokenIfNeeded(user, token)
         }
 
-        Collection<GrantedAuthority> roles = authDao.getRoles(user)
-        UserDetails userDetails = new User(user.screenName, token.tokenSecret, true, true, true, true, roles)
-        token.details = userDetails
-        token.authorities = userDetails.getAuthorities()
-        token.principal = authDao.getPrincipal(user)
+        Object appUser = authDao.getAppUser(user)
+        Object principal = authDao.getPrincipal(appUser)
+
+        token.details = null
+        token.principal = principal
+        if (UserDetails.isAssignableFrom(principal.class)) {
+            token.authorities = ((UserDetails)principal).getAuthorities()
+        } else {
+            token.authorities = authDao.getRoles(appUser)
+        }
         return token
     }
 

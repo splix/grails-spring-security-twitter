@@ -31,7 +31,7 @@ class TwitterAuthTagLib {
 
         TwitterFactory factory = new TwitterFactory()
         Twitter twitter = factory.getInstance()
-        twitter.setOAuthConsumer(conf.app.consumerKey, conf.app.consumerSecret)
+        twitter.setOAuthConsumer(conf.consumerKey, conf.consumerSecret)
 
         RequestToken requestToken = session.getAttribute(TwitterAuthFilter.REQUEST_TOKEN)
         if (requestToken == null) {

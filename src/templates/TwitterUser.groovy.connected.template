@@ -1,16 +1,16 @@
-import com.the6hours.grails.springsecurity.twitter.TwitterUserDomain
 ${userImport}
 
-class ${domainClassName} implements TwitterUserDomain {
+class ${domainClassName} {
 
     int uid
     String screenName
+
     String tokenSecret
     String token
 
-	static belongsTo = [${userConnectionProperty}: ${userClassName}]
+	  static belongsTo = [${userConnectionProperty}: ${userClassName}]
 
-	static constraints = {
-		uid unique: true
-	}
+	  static constraints = {
+		  uid unique: true
+	  }
 }

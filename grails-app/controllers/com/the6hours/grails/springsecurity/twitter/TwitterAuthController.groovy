@@ -1,8 +1,7 @@
 package com.the6hours.grails.springsecurity.twitter
 
-import com.the6hours.grails.springsecurity.twitter.TwitterAuthFilter
-import twitter4j.auth.RequestToken
 import org.apache.log4j.Logger
+import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 
 class TwitterAuthController {
 
@@ -15,18 +14,15 @@ class TwitterAuthController {
 
     def popup = {
         log.debug "Show popup"
-        RequestToken requestToken = session[TwitterAuthFilter.REQUEST_TOKEN]
-        if (!requestToken) {
-            log.warn('No requestToken')
-            //TODO
-        }
         if (springSecurityService.isLoggedIn()) {
             log.debug "Is loggedIn"
             render controller: 'twitterAuth', view: 'popupOk', model: []
         } else {
             log.debug "Not loggedIn"
-            String authUrl = requestToken.authenticationURL
-            redirect url: authUrl
+            def conf = SpringSecurityUtils.securityConfig.twitter
+
+            String authFilter = conf.filter.processUrl
+            redirect url: authFilter
         }
     }
 

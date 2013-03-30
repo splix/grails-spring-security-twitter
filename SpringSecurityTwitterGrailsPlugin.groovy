@@ -22,7 +22,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 class SpringSecurityTwitterGrailsPlugin {
 
     // the plugin version
-    def version = "0.4.4"
+    def version = "0.5"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "2.0.0 > *"
 
@@ -104,6 +104,7 @@ class SpringSecurityTwitterGrailsPlugin {
                 filterProcessesUrl =  conf.twitter.filter.processUrl
                 consumerKey = conf.twitter.consumerKey
                 consumerSecret = conf.twitter.consumerSecret
+                linkGenerator = ref('grailsLinkGenerator')
                 if (conf.twitter.sessionAuthenticationStrategy) {
                     sessionAuthenticationStrategy = ref(conf.twitter.sessionAuthenticationStrategy)
                 } else {

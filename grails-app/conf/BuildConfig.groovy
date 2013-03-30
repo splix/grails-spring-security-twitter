@@ -19,15 +19,10 @@ grails.project.dependency.resolution = {
         grailsPlugins()
         grailsHome()
         grailsCentral()
-        mavenRepo "http://twitter4j.org/maven2"
+        mavenRepo "http://maven.springframework.org/release"
         mavenRepo "http://repo1.maven.org/maven2"
     }
     dependencies {
-        runtime('org.twitter4j:twitter4j-core:2.2.5'){
-            excludes 'commons-logging'
-        }
-
-
         runtime('org.springframework.security:spring-security-core:'+springSecurityVer) {
             excludes 'com.springsource.javax.servlet',
                      'com.springsource.org.aopalliance',
@@ -51,6 +46,7 @@ grails.project.dependency.resolution = {
                      'org.springframework.core',
                      'org.springframework.web'
         }
+        compile 'org.springframework.social:spring-social-twitter:1.0.3.RELEASE'
     }
 
     plugins {

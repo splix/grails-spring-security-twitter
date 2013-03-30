@@ -1,12 +1,8 @@
 package com.the6hours.grails.springsecurity.twitter
 
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
-import twitter4j.Twitter
-import com.the6hours.grails.springsecurity.twitter.TwitterAuthFilter
-import twitter4j.TwitterFactory
-import twitter4j.auth.RequestToken
 import org.apache.log4j.Logger
-import twitter4j.TwitterException
+import org.codehaus.groovy.grails.web.mapping.LinkGenerator
 
 /**
  * Twitter Auth tags
@@ -26,45 +22,26 @@ class TwitterAuthTagLib {
 	def button = { attrs, body ->
         def conf = SpringSecurityUtils.securityConfig.twitter
 
-//        String authFilter = conf.popup ? conf.filter.processPopupUrl : conf.filter.processUrl
         String authFilter = conf.filter.processUrl
-
-        TwitterFactory factory = new TwitterFactory()
-        Twitter twitter = factory.getInstance()
-        twitter.setOAuthConsumer(conf.consumerKey, conf.consumerSecret)
-
-        RequestToken requestToken = session.getAttribute(TwitterAuthFilter.REQUEST_TOKEN)
-        if (requestToken == null) {
-            try {
-                log.info "Prepare new requestToken, put as " + TwitterAuthFilter.REQUEST_TOKEN
-                String callbackUrl = g.resource(file: authFilter, absolute: true)
-                requestToken = twitter.getOAuthRequestToken(callbackUrl)
-                session.setAttribute(TwitterAuthFilter.REQUEST_TOKEN, requestToken)
-            } catch (TwitterException e) {
-                log.error "Twitter error: $e.message"
-                log.error "Used Consumer Key / Secret: $conf.app.consumerKey / $conf.app.consumerSecret"
-                log.error "Skipping twitter auth button"
-                return
-            }
-        } else {
-            log.info "Reusing existing requestToken"
-        }
-
-        log.debug "Request Token: " + session.getAttribute(TwitterAuthFilter.REQUEST_TOKEN)
-
-        String authUrl = requestToken.authenticationURL
+        String authUrl = authFilter
         String text = "Connect with Twitter"
+        boolean popup = conf.popup
 
         out << '<span class="twitter-login">'
         out << '<a href="'
-        out << authUrl
+        out << createLink(uri: authUrl)
         out << '" class="twitter-button" title="'
-        out << text
-        out << '" onclick="twitterConnect(); return false;"><span>'
-        out << text
+        out << text.encodeAsHTML()
+        out << '"'
+        if (popup) {
+            out << 'onclick="twitterConnect(); return false;"'
+        }
+        out << '>'
+        out << '<span>'
+        out << text.encodeAsHTML()
         out << '</span></a></span>'
 
-        if (conf.popup) {
+        if (popup) {
             String successUrl = SpringSecurityUtils.securityConfig.successHandler.defaultTargetUrl
             out << '<script type="text/javascript">'
             out << '   function twitterConnect() {'
@@ -72,12 +49,6 @@ class TwitterAuthTagLib {
             out << '   }'
             out << '   function loggedIn() {'
             out << "     window.location.href = '$successUrl';"
-            out << '   }'
-            out << '</script>'
-        } else {
-            out << '<script type="text/javascript">'
-            out << '   function twitterConnect() {'
-            out << "     window.location.href = '$authUrl';"
             out << '   }'
             out << '</script>'
         }

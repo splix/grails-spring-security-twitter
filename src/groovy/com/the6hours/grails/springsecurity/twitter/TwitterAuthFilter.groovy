@@ -1,18 +1,26 @@
 package com.the6hours.grails.springsecurity.twitter
 
+import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import org.codehaus.groovy.grails.web.mapping.LinkGenerator
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter
 import org.springframework.security.core.Authentication
+import org.springframework.social.connect.Connection
+import org.springframework.social.connect.UserProfile
+import org.springframework.social.oauth1.AbstractOAuth1ServiceProvider
+import org.springframework.social.oauth1.AuthorizedRequestToken
+import org.springframework.social.oauth1.OAuth1Operations
+import org.springframework.social.oauth1.OAuth1Parameters
+import org.springframework.social.oauth1.OAuthToken
+import org.springframework.social.twitter.api.Twitter
+import org.springframework.social.twitter.api.UserOperations
+
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-import twitter4j.Twitter
-import twitter4j.auth.RequestToken
 import org.apache.commons.lang.StringUtils
-import twitter4j.auth.AccessToken
-import twitter4j.TwitterException
-import twitter4j.TwitterFactory
 import org.apache.log4j.Logger
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.DisabledException
+import org.springframework.social.twitter.connect.*
 
 /**
  * TODO
@@ -27,11 +35,12 @@ class TwitterAuthFilter extends AbstractAuthenticationProcessingFilter {
     public static final String PREFIX = "twitterAuth."
     public static final String REQUEST_TOKEN = PREFIX + "requestToken"
 
-    TwitterFactory factory = new TwitterFactory()
     String consumerKey
     String consumerSecret
 //    String filterPopupUrl
 //    boolean popup
+
+    LinkGenerator linkGenerator
 
     TwitterAuthFilter(String url) {
         super(url)
@@ -40,28 +49,23 @@ class TwitterAuthFilter extends AbstractAuthenticationProcessingFilter {
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
         log.debug "TwitterAuthFilter auth"
 
-        RequestToken requestToken = (RequestToken) request.getSession().getAttribute(REQUEST_TOKEN)
-        if (requestToken == null) {
-            log.warn "No requestToken for twitter callback at " + REQUEST_TOKEN
+        String oauthVerifier = request.getParameter("oauth_verifier")
+        if (oauthVerifier == null || oauthVerifier.length() == 0) {
+            redirectToTwitter(request, response)
             return null
         }
-        String verifier = request.getParameter("oauth_verifier")
-        if (StringUtils.isEmpty(verifier)) {
-            log.warn "Empty oauth_verifier"
-            return null
-        }
-
-        Twitter twitter = factory.getInstance()
-        twitter.setOAuthConsumer(consumerKey, consumerSecret)
 
         try {
-            AccessToken token = twitter.getOAuthAccessToken(requestToken, verifier)
-            request.getSession().removeAttribute(REQUEST_TOKEN)
+            OAuthToken token = verifyToken(request, oauthVerifier)
+            TwitterConnectionFactory connectionFactory = new TwitterConnectionFactory(consumerKey, consumerSecret)
+            Connection<Twitter> connection = connectionFactory.createConnection(token)
+            UserOperations userOperations = connection.api.userOperations()
+
             TwitterAuthToken securityToken = new TwitterAuthToken(
-                    userId: token.userId,
-                    screenName: token.screenName,
-                    tokenSecret: token.tokenSecret,
-                    token: token.token
+                    userId: userOperations.profileId,
+                    screenName: userOperations.screenName,
+                    tokenSecret: token.secret,
+                    token: token.value
             )
             securityToken.authenticated = true
             Authentication auth = getAuthenticationManager().authenticate(securityToken)
@@ -72,10 +76,37 @@ class TwitterAuthFilter extends AbstractAuthenticationProcessingFilter {
             } else {
                 throw new DisabledException("User is disabled")
             }
-        } catch (TwitterException e) {
+        } catch (Exception e) {
             log.error "Failed processing twitter callback", e
         }
         throw new BadCredentialsException("Invalid twitter token")
+    }
+
+    OAuthToken verifyToken(HttpServletRequest request, String oauthVerifier) {
+        TwitterServiceProvider provider = new TwitterServiceProvider(consumerKey, consumerSecret)
+        OAuth1Operations oauth = provider.getOAuthOperations()
+
+        OAuthToken requestToken = (OAuthToken) request.getSession().getAttribute(REQUEST_TOKEN)
+
+        OAuthToken accessToken = oauth.exchangeForAccessToken(
+            new AuthorizedRequestToken(requestToken, oauthVerifier), null);
+        request.getSession().removeAttribute(REQUEST_TOKEN)
+        return accessToken
+    }
+
+    void redirectToTwitter(HttpServletRequest request, HttpServletResponse response) {
+        TwitterServiceProvider provider = new TwitterServiceProvider(consumerKey, consumerSecret)
+        OAuth1Operations oauth = provider.getOAuthOperations()
+
+        def conf = SpringSecurityUtils.securityConfig.twitter
+        String authFilter = conf.filter.processUrl
+        String url = linkGenerator.link(uri: authFilter, absolute: true)
+        log.debug("Back url: $url")
+
+        OAuthToken requestToken = oauth.fetchRequestToken(url, null)
+        request.session.setAttribute(REQUEST_TOKEN, requestToken)
+        String authorizeUrl = oauth.buildAuthorizeUrl(requestToken.value, (OAuth1Parameters) OAuth1Parameters.NONE)
+        response.sendRedirect(authorizeUrl)
     }
 
     protected boolean _requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {

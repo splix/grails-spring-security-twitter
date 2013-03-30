@@ -16,7 +16,6 @@ import org.springframework.social.twitter.api.UserOperations
 
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-import org.apache.commons.lang.StringUtils
 import org.apache.log4j.Logger
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.DisabledException
@@ -32,13 +31,11 @@ class TwitterAuthFilter extends AbstractAuthenticationProcessingFilter {
 
     private static def log = Logger.getLogger(this)
 
-    public static final String PREFIX = "twitterAuth."
-    public static final String REQUEST_TOKEN = PREFIX + "requestToken"
+    public static final String PREFIX = TwitterAuthFilter.canonicalName
+    public static final String REQUEST_TOKEN = PREFIX + ".requestToken"
 
     String consumerKey
     String consumerSecret
-//    String filterPopupUrl
-//    boolean popup
 
     LinkGenerator linkGenerator
 

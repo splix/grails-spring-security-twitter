@@ -3,8 +3,6 @@ package com.the6hours.grails.springsecurity.twitter
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.userdetails.UserDetails
-import org.springframework.security.core.GrantedAuthority
-import org.springframework.security.core.userdetails.User
 import org.apache.log4j.Logger
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 
@@ -38,7 +36,7 @@ class TwitterAuthProvider implements AuthenticationProvider {
                throw new UsernameNotFoundException("Cannot create user for twitter $token.screenName")
             }
         } else {
-            authDao.updateTokenIfNeeded(user, token)
+            authDao.updateIfNeeded(user, token)
         }
 
         Object appUser = authDao.getAppUser(user)

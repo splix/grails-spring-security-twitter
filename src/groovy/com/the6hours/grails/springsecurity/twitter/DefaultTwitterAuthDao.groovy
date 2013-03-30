@@ -105,9 +105,9 @@ class DefaultTwitterAuthDao implements TwitterAuthDao, InitializingBean {
         return user
     }
 
-    void updateTokenIfNeeded(Object user, TwitterAuthToken token) {
+    void updateIfNeeded(Object user, TwitterAuthToken token) {
         if (twitterAuthService && twitterAuthService.respondsTo('updateTokenIfNeeded', user.class, token.class)) {
-            twitterAuthService.updateTokenIfNeeded(user, token)
+            twitterAuthService.updateIfNeeded(user, token)
             return
         }
         TwitterUserDomain.withTransaction {

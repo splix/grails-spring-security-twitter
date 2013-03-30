@@ -5,8 +5,6 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.authentication.AbstractAuthenticationToken
 
 /**
- * TODO
- *
  * @since 02.05.11
  * @author Igor Artamonov (http://igorartamonov.com)
  */

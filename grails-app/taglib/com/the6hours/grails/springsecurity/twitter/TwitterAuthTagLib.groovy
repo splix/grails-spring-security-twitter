@@ -2,7 +2,6 @@ package com.the6hours.grails.springsecurity.twitter
 
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import org.apache.log4j.Logger
-import org.codehaus.groovy.grails.web.mapping.LinkGenerator
 
 /**
  * Twitter Auth tags
@@ -15,9 +14,6 @@ class TwitterAuthTagLib {
     private static def log = Logger.getLogger(this)
 
     static namespace = 'twitterAuth'
-
-	/** Dependency injection for springSecurityService. */
-	def springSecurityService
 
 	def button = { attrs, body ->
         def conf = SpringSecurityUtils.securityConfig.twitter

@@ -6,6 +6,7 @@ import org.codehaus.groovy.grails.plugins.springsecurity.GormUserDetailsService
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.context.ApplicationContext
+import org.springframework.dao.OptimisticLockingFailureException
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.GrantedAuthorityImpl
 import org.springframework.security.core.userdetails.UserDetails
@@ -51,13 +52,13 @@ class DefaultTwitterAuthDao implements TwitterAuthDao, InitializingBean {
 
     void fillTwitterUserDetails(def user, TwitterAuthToken token) {
         user.properties[idProperty] = token.userId
-        if (usernameProperty && user.properties.containsKey(usernameProperty)) {
+        if (usernameProperty && user.hasProperty(usernameProperty)) {
             user.properties[usernameProperty] = token.screenName
         }
-        if (user.properties.containsKey('token')) {
+        if (user.hasProperty('token')) {
             user.token = token.token
         }
-        if (user.properties.containsKey('tokenSecret')) {
+        if (user.hasProperty('tokenSecret')) {
             user.tokenSecret = token.tokenSecret
         }
     }
@@ -157,30 +158,36 @@ class DefaultTwitterAuthDao implements TwitterAuthDao, InitializingBean {
             return
         }
         TwitterUser.withTransaction {
-            if (!user.isAttached()) {
-                user.attach()
-            }
-            boolean update = false
-            if (user.properties.containsKey('token')) {
-                if (user.token != token.token) {
-                    update = true
-                    user.token = token.token
+            try {
+                if (!user.isAttached()) {
+                    user.attach()
                 }
-            }
-            if (user.properties.containsKey('tokenSecret')) {
-                if (user.tokenSecret != token.tokenSecret) {
-                    update = true
-                    user.tokenSecret = token.tokenSecret
+                boolean update = false
+                if (user.hasProperty('token')) {
+                    if (user.token != token.token) {
+                        update = true
+                        user.token = token.token
+                    }
                 }
-            }
-            if (user.properties.containsKey(usernameProperty)) {
-                if (user.properties[usernameProperty] != token.screenName) {
-                    update = true
-                    user.properties[usernameProperty] = token.screenName
+                if (user.hasProperty('tokenSecret')) {
+                    if (user.tokenSecret != token.tokenSecret) {
+                        update = true
+                        user.tokenSecret = token.tokenSecret
+                    }
                 }
-            }
-            if (update) {
-                user.save()
+                if (user.hasProperty(usernameProperty)) {
+                    if (user.properties[usernameProperty] != token.screenName) {
+                        update = true
+                        user.properties[usernameProperty] = token.screenName
+                    }
+                }
+                if (update) {
+                    user.save()
+                }
+            } catch (OptimisticLockingFailureException e) {
+                log.warn("Seems that user was updated in another thread (${e.message}). Skip")
+            } catch (Throwable e) {
+                log.error("Can't update user", e)
             }
         }
     }

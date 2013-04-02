@@ -23,8 +23,8 @@ class DefaultTwitterAuthDao implements TwitterAuthDao, InitializingBean {
     ApplicationContext applicationContext
     def coreUserDetailsService
 
-    Class TwitterUserDomain
-    Class AppUserDomain
+    Class TwitterUser
+    Class AppUser
     String twitterUserClassName
     String appUserClassName
 
@@ -43,21 +43,13 @@ class DefaultTwitterAuthDao implements TwitterAuthDao, InitializingBean {
             return twitterAuthService.findUser(token)
         }
         Object user = null
-        TwitterUserDomain.withTransaction {
-            user = TwitterUserDomain.findWhere((idProperty): token.userId)
+        TwitterUser.withTransaction {
+            user = TwitterUser.findWhere((idProperty): token.userId)
         }
         return user
     }
 
-    Object create(TwitterAuthToken token) {
-        if (twitterAuthService && twitterAuthService.respondsTo('create', token.class)) {
-            return twitterAuthService.create(token)
-        }
-
-        def securityConf = SpringSecurityUtils.securityConfig
-
-        def user = grailsApplication.getDomainClass(TwitterUserDomain.name).newInstance()
-
+    void fillTwitterUserDetails(def user, TwitterAuthToken token) {
         user.properties[idProperty] = token.userId
         if (usernameProperty && user.properties.containsKey(usernameProperty)) {
             user.properties[usernameProperty] = token.screenName
@@ -68,38 +60,88 @@ class DefaultTwitterAuthDao implements TwitterAuthDao, InitializingBean {
         if (user.properties.containsKey('tokenSecret')) {
             user.tokenSecret = token.tokenSecret
         }
+    }
 
+    void fillAppUserDetails(def appUser, TwitterAuthToken token) {
+        def securityConf = SpringSecurityUtils.securityConfig
+
+        String username
+        if (twitterAuthService && twitterAuthService.respondsTo('generateUsername', AppUser, TwitterAuthToken)) {
+            username = twitterAuthService.generateUsername(appUser, token)
+        } else {
+            username = token.screenName
+        }
+
+        appUser[securityConf.userLookup.usernamePropertyName] = username
+        appUser[securityConf.userLookup.passwordPropertyName] = token.tokenSecret
+        appUser[securityConf.userLookup.enabledPropertyName] = true
+        appUser[securityConf.userLookup.accountExpiredPropertyName] = false
+        appUser[securityConf.userLookup.accountLockedPropertyName] = false
+        appUser[securityConf.userLookup.passwordExpiredPropertyName] = false
+    }
+
+    Object create(TwitterAuthToken token) {
+        if (twitterAuthService && twitterAuthService.respondsTo('create', token.class)) {
+            return twitterAuthService.create(token)
+        }
+
+        def securityConf = SpringSecurityUtils.securityConfig
+
+        def user = null
         def appUser = null
-        if (TwitterUserDomain != AppUserDomain) {
-            appUser = grailsApplication.getDomainClass(AppUserDomain.name).newInstance()
-            appUser[securityConf.userLookup.usernamePropertyName] = token.screenName
-            appUser[securityConf.userLookup.passwordPropertyName] = token.tokenSecret
-            appUser[securityConf.userLookup.enabledPropertyName] = true
-            appUser[securityConf.userLookup.accountExpiredPropertyName] = false
-            appUser[securityConf.userLookup.accountLockedPropertyName] = false
-            appUser[securityConf.userLookup.passwordExpiredPropertyName] = false
-            AppUserDomain.withTransaction {
+
+        if (isSameDomain()) {
+            if (twitterAuthService && twitterAuthService.respondsTo('createUser', TwitterUser, TwitterAuthToken)) {
+                user = twitterAuthService.createUser(user, token)
+            } else {
+                user = grailsApplication.getDomainClass(TwitterUser.name).newInstance()
+                fillTwitterUserDetails(user, token)
+                fillAppUserDetails(user, token)
+            }
+        } else {
+            if (twitterAuthService && twitterAuthService.respondsTo('createTwitterUser', TwitterAuthToken)) {
+                user = twitterAuthService.createAppUser(token)
+            } else {
+                user = grailsApplication.getDomainClass(TwitterUser.name).newInstance()
+                fillTwitterUserDetails(user, token)
+            }            
+            if (twitterAuthService && twitterAuthService.respondsTo('createAppUser', TwitterUser, TwitterAuthToken)) {
+                appUser = twitterAuthService.createAppUser(user, token)
+            } else {
+                appUser = grailsApplication.getDomainClass(AppUser.name).newInstance()
+                fillAppUserDetails(appUser, token)
+            }
+            AppUser.withTransaction {
                 appUser.save(flush: true, failOnError: true)
             }
             user[appUserConnectionPropertyName] = appUser
-        } else {
-            appUser = user
         }
-        TwitterUserDomain.withTransaction {
+
+        TwitterUser.withTransaction {
             user.save()
         }
-        Class<?> PersonRole = grailsApplication.getDomainClass(securityConf.userLookup.authorityJoinClassName).clazz
-        Class<?> Authority = grailsApplication.getDomainClass(securityConf.authority.className).clazz
-        PersonRole.withTransaction { status ->
-            defaultRoleNames.each { String roleName ->
-                String findByField = securityConf.authority.nameField[0].toUpperCase() + securityConf.authority.nameField.substring(1)
-                def auth = Authority."findBy${findByField}"(roleName)
-                if (auth) {
-                    PersonRole.create(appUser, auth)
-                } else {
-                    log.error("Can't find authority for name '$roleName'")
+        
+        if (twitterAuthService && twitterAuthService.respondsTo('afterCreate', TwitterUser, TwitterAuthToken)) {
+            twitterAuthService.afterCreate(user, token)
+        }
+
+        if (twitterAuthService && twitterAuthService.respondsTo('createRoles', TwitterUser, TwitterAuthToken)) {
+            twitterAuthService.createRoles(user, token)
+        } else {
+            Class<?> PersonRole = grailsApplication.getDomainClass(securityConf.userLookup.authorityJoinClassName).clazz
+            Class<?> Authority = grailsApplication.getDomainClass(securityConf.authority.className).clazz
+            PersonRole.withTransaction { status ->
+                defaultRoleNames.each { String roleName ->
+                    String findByField = securityConf.authority.nameField[0].toUpperCase() + securityConf.authority.nameField.substring(1)
+                    def auth = Authority."findBy${findByField}"(roleName)
+                    if (auth) {
+                        PersonRole.create(appUser, auth)
+                    } else {
+                        log.error("Can't find authority for name '$roleName'")
+                    }
                 }
             }
+
         }
 
         return user
@@ -107,10 +149,14 @@ class DefaultTwitterAuthDao implements TwitterAuthDao, InitializingBean {
 
     void updateIfNeeded(Object user, TwitterAuthToken token) {
         if (twitterAuthService && twitterAuthService.respondsTo('updateTokenIfNeeded', user.class, token.class)) {
+            twitterAuthService.updateTokenIfNeeded(user, token)
+            return
+        }
+        if (twitterAuthService && twitterAuthService.respondsTo('updateIfNeeded', user.class, token.class)) {
             twitterAuthService.updateIfNeeded(user, token)
             return
         }
-        TwitterUserDomain.withTransaction {
+        TwitterUser.withTransaction {
             if (!user.isAttached()) {
                 user.attach()
             }
@@ -143,7 +189,7 @@ class DefaultTwitterAuthDao implements TwitterAuthDao, InitializingBean {
         if (twitterAuthService && twitterAuthService.respondsTo('getAppUser', user.class)) {
             return twitterAuthService.getAppUser(user)
         }
-        if (TwitterUserDomain == AppUserDomain) {
+        if (TwitterUser == AppUser) {
             return user
         }
         return user[appUserConnectionPropertyName]
@@ -193,6 +239,14 @@ class DefaultTwitterAuthDao implements TwitterAuthDao, InitializingBean {
         }
     }
 
+    /**
+     *
+     * @return true if app have only one domain for storing both User Details and Twitter Account details
+     */
+    boolean isSameDomain() {
+        return AppUser == TwitterUser
+    }
+
     void afterPropertiesSet() throws Exception {
         if (coreUserDetailsService != null) {
             if (!(coreUserDetailsService instanceof GormUserDetailsService && coreUserDetailsService.respondsTo('createUserDetails'))) {
@@ -203,23 +257,23 @@ class DefaultTwitterAuthDao implements TwitterAuthDao, InitializingBean {
             log.warn("No UserDetailsService bean from spring-security-core")
         }
 
-        if (TwitterUserDomain == null) {
-            TwitterUserDomain = grailsApplication.getDomainClass(twitterUserClassName)?.clazz
-            if (!TwitterUserDomain) {
+        if (TwitterUser == null) {
+            TwitterUser = grailsApplication.getDomainClass(twitterUserClassName)?.clazz
+            if (!TwitterUser) {
                 log.error("Can't find domain: $twitterUserClassName")
             }
         }
-        if (AppUserDomain == null) {
-            AppUserDomain = grailsApplication.getDomainClass(appUserClassName)?.clazz
-            if (!AppUserDomain) {
+        if (AppUser == null) {
+            AppUser = grailsApplication.getDomainClass(appUserClassName)?.clazz
+            if (!AppUser) {
                 log.error("Can't find domain: $appUserClassName")
             }
         }
-        if (TwitterUserDomain == null && AppUserDomain != null) {
-            log.info("Use $AppUserDomain to store Twitter Authentication")
-            TwitterUserDomain = AppUserDomain
-        } else if (TwitterUserDomain != null && AppUserDomain == null) {
-            AppUserDomain = TwitterUserDomain
+        if (TwitterUser == null && AppUser != null) {
+            log.info("Use $AppUser to store Twitter Authentication")
+            TwitterUser = AppUser
+        } else if (TwitterUser != null && AppUser == null) {
+            AppUser = TwitterUser
         }
 
     }

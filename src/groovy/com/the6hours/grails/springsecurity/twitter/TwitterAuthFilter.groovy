@@ -5,8 +5,6 @@ import org.codehaus.groovy.grails.web.mapping.LinkGenerator
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter
 import org.springframework.security.core.Authentication
 import org.springframework.social.connect.Connection
-import org.springframework.social.connect.UserProfile
-import org.springframework.social.oauth1.AbstractOAuth1ServiceProvider
 import org.springframework.social.oauth1.AuthorizedRequestToken
 import org.springframework.social.oauth1.OAuth1Operations
 import org.springframework.social.oauth1.OAuth1Parameters
@@ -22,7 +20,7 @@ import org.springframework.security.authentication.DisabledException
 import org.springframework.social.twitter.connect.*
 
 /**
- * TODO
+ * Default Authentication filter
  *
  * @since 09.05.11
  * @author Igor Artamonov (http://igorartamonov.com)

@@ -104,27 +104,4 @@ class TwitterAuthFilter extends AbstractAuthenticationProcessingFilter {
         response.sendRedirect(authorizeUrl)
     }
 
-    protected boolean _requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
-        if (super.requiresAuthentication(request, response)) {
-            return true
-        }
-        if (!popup) {
-            return false
-        }
-        String uri = request.getRequestURI();
-        int pathParamIndex = uri.indexOf(';');
-
-        if (pathParamIndex > 0) {
-            // strip everything after the first semi-colon
-            uri = uri.substring(0, pathParamIndex);
-        }
-
-        if ("".equals(request.getContextPath())) {
-            return uri.endsWith(filterProcessesUrl);
-        }
-
-        return uri.endsWith(request.getContextPath() + filterPopupUrl);
-    }
-
-
 }

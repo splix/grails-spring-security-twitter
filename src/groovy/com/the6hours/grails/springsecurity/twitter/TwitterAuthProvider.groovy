@@ -19,8 +19,6 @@ class TwitterAuthProvider implements AuthenticationProvider {
     TwitterAuthDao authDao
     boolean createNew = true
 
-    def facebookAuthService
-
     Authentication authenticate(Authentication authentication) {
         TwitterAuthToken token = authentication
 

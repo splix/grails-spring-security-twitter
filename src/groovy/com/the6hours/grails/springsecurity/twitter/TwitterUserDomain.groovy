@@ -8,11 +8,10 @@ package com.the6hours.grails.springsecurity.twitter
  * Since version 0.5 you could use standard domain for Twitter Authentication plugin, just
  * add fields: long twitterId, String username, String token, String tokenSecret
  *
- * Btw, if you want explicitly show that you domain is a domain Twitter User, you could still inherit
- * this class.
- *
+ * Btw, if you want to explicitly show that your domain is a domain for Twitter User, you could implement this
+ * interface
  */
-class TwitterUserDomain {
+interface TwitterUserDomain {
 
     long twitterId
     String username

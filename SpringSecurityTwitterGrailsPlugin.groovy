@@ -96,14 +96,13 @@ class SpringSecurityTwitterGrailsPlugin {
             SpringSecurityUtils.registerFilter twitterAuthFilterName, SecurityFilterPosition.OPENID_FILTER
         } else {
             SpringSecurityUtils.registerFilter 'twitterAuthFilter', SecurityFilterPosition.OPENID_FILTER
-            twitterAuthFilterName = 'twitterAuthFilter'
             twitterAuthFilter(TwitterAuthFilter, conf.twitter.filter.processUrl) {
                 rememberMeServices = ref('rememberMeServices')
                 authenticationManager = ref('authenticationManager')
                 authenticationDetailsSource = ref('authenticationDetailsSource')
                 filterProcessesUrl =  conf.twitter.filter.processUrl
-                consumerKey = conf.twitter.consumerKey
-                consumerSecret = conf.twitter.consumerSecret
+                consumerKey = getConfigValue(conf, 'twitter.consumerKey', 'twitter.app.consumerKey')
+                consumerSecret = getConfigValue(conf, 'twitter.consumerSecret', 'twitter.app.consumerSecret')
                 linkGenerator = ref('grailsLinkGenerator')
                 if (conf.twitter.sessionAuthenticationStrategy) {
                     sessionAuthenticationStrategy = ref(conf.twitter.sessionAuthenticationStrategy)
@@ -127,7 +126,21 @@ class SpringSecurityTwitterGrailsPlugin {
         println "... finished configuring Spring Security Twitter"
     }
 
-    def doWithApplicationContext = { applicationContext ->
+    private Object getConfigValue(def conf, String ... values) {
+        conf = conf.flatten()
+        String key = values.find {
+            if (!conf.containsKey(it)) {
+                return false
+            }
+            def val = conf.get(it)
+            if (val == null || val.toString() == '{}') {
+                return false
+            }
+            return true
+        }
+        if (key) {
+            return conf.get(key)
+        }
+        return null
     }
-
 }

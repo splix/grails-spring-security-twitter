@@ -53,7 +53,7 @@ class DefaultTwitterAuthDao implements TwitterAuthDao, InitializingBean {
     void fillTwitterUserDetails(def user, TwitterAuthToken token) {
         user.properties[idProperty] = token.userId
         if (usernameProperty && user.hasProperty(usernameProperty)) {
-            user.properties[usernameProperty] = token.screenName
+            user.setProperty(usernameProperty, token.screenName)
         }
         if (user.hasProperty('token')) {
             user.token = token.token
@@ -73,12 +73,12 @@ class DefaultTwitterAuthDao implements TwitterAuthDao, InitializingBean {
             username = token.screenName
         }
 
-        appUser[securityConf.userLookup.usernamePropertyName] = username
-        appUser[securityConf.userLookup.passwordPropertyName] = token.tokenSecret
-        appUser[securityConf.userLookup.enabledPropertyName] = true
-        appUser[securityConf.userLookup.accountExpiredPropertyName] = false
-        appUser[securityConf.userLookup.accountLockedPropertyName] = false
-        appUser[securityConf.userLookup.passwordExpiredPropertyName] = false
+        appUser.setProperty(securityConf.userLookup.usernamePropertyName, username)
+        appUser.setProperty(securityConf.userLookup.passwordPropertyName, token.tokenSecret)
+        appUser.setProperty(securityConf.userLookup.enabledPropertyName, true)
+        appUser.setProperty(securityConf.userLookup.accountExpiredPropertyName, false)
+        appUser.setProperty(securityConf.userLookup.accountLockedPropertyName, false)
+        appUser.setProperty(securityConf.userLookup.passwordExpiredPropertyName, false)
     }
 
     Object create(TwitterAuthToken token) {
@@ -176,9 +176,9 @@ class DefaultTwitterAuthDao implements TwitterAuthDao, InitializingBean {
                     }
                 }
                 if (user.hasProperty(usernameProperty)) {
-                    if (user.properties[usernameProperty] != token.screenName) {
+                    if (user.getProperty(usernameProperty) != token.screenName) {
                         update = true
-                        user.properties[usernameProperty] = token.screenName
+                        user.setProperty(usernameProperty, token.screenName)
                     }
                 }
                 if (update) {
@@ -199,7 +199,14 @@ class DefaultTwitterAuthDao implements TwitterAuthDao, InitializingBean {
         if (TwitterUser == AppUser) {
             return user
         }
-        return user[appUserConnectionPropertyName]
+        def result = null
+        AppUser.withTransaction {
+            if (!user.isAttached()) {
+                user.attach()
+            }
+            result = user.getProperty(appUserConnectionPropertyName)
+        }
+        return result
     }
 
     Object getPrincipal(Object user) {
@@ -241,7 +248,7 @@ class DefaultTwitterAuthDao implements TwitterAuthDao, InitializingBean {
             if (it instanceof String) {
                 return new GrantedAuthorityImpl(it.toString())
             } else {
-                new GrantedAuthorityImpl(it[conf.authority.nameField])
+                new GrantedAuthorityImpl(it.getProperty(conf.authority.nameField))
             }
         }
     }

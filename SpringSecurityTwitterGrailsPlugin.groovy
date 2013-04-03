@@ -47,8 +47,6 @@ class SpringSecurityTwitterGrailsPlugin {
 
 
     def doWithSpring = {
-        //def SpringSecurityUtils = classLoader.loadClass('org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils')
-
         def conf = SpringSecurityUtils.securityConfig
         if (!conf) {
             println 'ERROR: There is no Spring Security configuration'
@@ -59,7 +57,6 @@ class SpringSecurityTwitterGrailsPlugin {
         println 'Configuring Spring Security Twitter ...'
 
         SpringSecurityUtils.loadSecondaryConfig 'DefaultTwitterSecurityConfig'
-
         // have to get again after overlaying DefaultTwitterSecurityConfig
         conf = SpringSecurityUtils.securityConfig
 
@@ -80,8 +77,9 @@ class SpringSecurityTwitterGrailsPlugin {
 			log.info("Using provided Twitter Auth DAO bean: $twitterDaoName")
 		}
 
-		String twitterAuthProviderName = conf?.twitter?.bean?.provider ?: null
+		String twitterAuthProviderName = getConfigValue(conf, 'twitter.provider', 'twitter.bean.provider')
         if (twitterAuthProviderName != null) {
+            log.info("Use provided authentication provider: $twitterAuthProviderName")
             SpringSecurityUtils.registerProvider twitterAuthProviderName
         } else {
             SpringSecurityUtils.registerProvider 'twitterAuthProvider'
@@ -91,18 +89,22 @@ class SpringSecurityTwitterGrailsPlugin {
             }
         }
 
-		String twitterAuthFilterName = conf?.twitter?.bean?.filter ?: null
+		String twitterAuthFilterName = getConfigValue(conf, 'twitter.filter', 'twitter.bean.filter')
         if (twitterAuthFilterName != null) {
+            log.info("Use provided authentication filter: $twitterAuthFilterName")
             SpringSecurityUtils.registerFilter twitterAuthFilterName, SecurityFilterPosition.OPENID_FILTER
         } else {
+            String _consumerKey = getConfigValue(conf, 'twitter.consumerKey', 'twitter.app.consumerKey')
+            String _consumerSecret = getConfigValue(conf, 'twitter.consumerSecret', 'twitter.app.consumerSecret')
+            twitterAuthFilterName = 'twitterAuthFilter'
             SpringSecurityUtils.registerFilter 'twitterAuthFilter', SecurityFilterPosition.OPENID_FILTER
             twitterAuthFilter(TwitterAuthFilter, conf.twitter.filter.processUrl) {
                 rememberMeServices = ref('rememberMeServices')
                 authenticationManager = ref('authenticationManager')
                 authenticationDetailsSource = ref('authenticationDetailsSource')
                 filterProcessesUrl =  conf.twitter.filter.processUrl
-                consumerKey = getConfigValue(conf, 'twitter.consumerKey', 'twitter.app.consumerKey')
-                consumerSecret = getConfigValue(conf, 'twitter.consumerSecret', 'twitter.app.consumerSecret')
+                consumerKey = _consumerKey
+                consumerSecret = _consumerSecret
                 linkGenerator = ref('grailsLinkGenerator')
                 if (conf.twitter.sessionAuthenticationStrategy) {
                     sessionAuthenticationStrategy = ref(conf.twitter.sessionAuthenticationStrategy)
@@ -117,7 +119,7 @@ class SpringSecurityTwitterGrailsPlugin {
                 if (conf.twitter.authenticationSuccessHandler) {
                     authenticationSuccessHandler = ref(conf.twitter.authenticationSuccessHandler)
                 } else if (conf.twitter.popup) {
-                    authenticationSuccessHandler = new SimpleUrlAuthenticationSuccessHandler(conf.twitter.filter.processPopupUrl)
+                    authenticationSuccessHandler = new SimpleUrlAuthenticationSuccessHandler(conf.twitter.filter.processPopupUrl as String)
                 } else {
                     authenticationSuccessHandler = ref('authenticationSuccessHandler')
                 }
@@ -126,7 +128,7 @@ class SpringSecurityTwitterGrailsPlugin {
         println "... finished configuring Spring Security Twitter"
     }
 
-    private Object getConfigValue(def conf, String ... values) {
+    private String getConfigValue(def conf, String ... values) {
         conf = conf.flatten()
         String key = values.find {
             if (!conf.containsKey(it)) {

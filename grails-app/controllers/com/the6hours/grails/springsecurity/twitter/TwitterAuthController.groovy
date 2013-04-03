@@ -1,11 +1,8 @@
 package com.the6hours.grails.springsecurity.twitter
 
-import org.apache.log4j.Logger
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 
 class TwitterAuthController {
-
-    private static def log = Logger.getLogger(this)
 
     /**
      * Dependency injection for the springSecurityService.

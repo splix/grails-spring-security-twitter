@@ -1,7 +1,6 @@
 package com.the6hours.grails.springsecurity.twitter
 
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
-import org.apache.log4j.Logger
 
 /**
  * Twitter Auth tags
@@ -10,8 +9,6 @@ import org.apache.log4j.Logger
  * @author Igor Artamonov (http://igorartamonov.com)
  */
 class TwitterAuthTagLib {
-
-    private static def log = Logger.getLogger(this)
 
     static namespace = 'twitterAuth'
 

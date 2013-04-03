@@ -9,4 +9,3 @@ target
 *.log
 /target
 plugin.xml
-web-app

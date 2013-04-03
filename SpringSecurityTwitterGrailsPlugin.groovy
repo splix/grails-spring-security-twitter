@@ -84,8 +84,14 @@ class SpringSecurityTwitterGrailsPlugin {
         } else {
             SpringSecurityUtils.registerProvider 'twitterAuthProvider'
             twitterAuthProviderName = 'twitterAuthProvider'
+            boolean _autoCreate = true
+            def _autoCreateConf = getConfigValue(conf, 'twitter.autoCreate.active')
+            if (_autoCreateConf != null) {
+                _autoCreate = _autoCreateConf as Boolean
+            }
             twitterAuthProvider(TwitterAuthProvider) {
                 authDao = ref(twitterDaoName)
+                createNew = _autoCreate
             }
         }
 

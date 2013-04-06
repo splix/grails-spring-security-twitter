@@ -6,6 +6,6 @@ h2. Requirements:
 
 h2. Links:
 
-  * Sources - [https://github.com/splix/grails-spring-security-twitter|https://github.com/splix/grails-spring-security-twitter]
-  * Example app - [https://github.com/splix/grails-twitter-authentication-example|https://github.com/splix/grails-twitter-authentication-example]
-  * Submit a bug - [GitHub Issues|https://github.com/splix/grails-spring-security-twitter/issues]
+  * Sources - "https://github.com/splix/grails-spring-security-twitter":https://github.com/splix/grails-spring-security-twitter
+  * Example app - "https://github.com/splix/grails-twitter-authentication-example":https://github.com/splix/grails-twitter-authentication-example
+  * Submit a bug - "GitHub Issues":https://github.com/splix/grails-spring-security-twitter/issues

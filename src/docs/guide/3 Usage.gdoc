@@ -1,6 +1,6 @@
 h2. Example app
 
-You can take a look at [Example Application|https://github.com/splix/grails-twitter-authentication-example], it's very
+You can take a look at "Example Application":https://github.com/splix/grails-twitter-authentication-example , it's very
 basic app, that shows how to use the plugin. Just clone it, put your Twitter App credentials, and play with the code.
 
 h2. Usage

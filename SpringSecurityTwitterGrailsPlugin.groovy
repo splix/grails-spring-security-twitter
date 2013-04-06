@@ -35,8 +35,8 @@ class SpringSecurityTwitterGrailsPlugin {
     ]
 
     def issueManagement = [ system: "GitHub", url: "https://github.com/splix/grails-spring-security-twitter/issues" ]
-    def scm = [ url: "https://github.com/splix/grails-spring-security-twitter.git" ]
-    def documentation = "http://grails.org/plugin/spring-security-twitter"
+    def scm = [ url: "https://github.com/splix/grails-spring-security-twitter" ]
+    def documentation = "http://splix.github.com/grails-spring-security-twitter"
 
 	def observe = ["springSecurityCore"]
 

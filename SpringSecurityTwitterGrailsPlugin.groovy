@@ -36,13 +36,13 @@ class SpringSecurityTwitterGrailsPlugin {
 
     def issueManagement = [ system: "GitHub", url: "https://github.com/splix/grails-spring-security-twitter/issues" ]
     def scm = [ url: "https://github.com/splix/grails-spring-security-twitter" ]
-    def documentation = "http://splix.github.com/grails-spring-security-twitter"
+    def documentation = "http://splix.github.io/grails-spring-security-twitter"
 
 	def observe = ["springSecurityCore"]
 
     String author = 'Igor Artamonov'
     String authorEmail = 'igor@artamonov.ru'
-    String title = 'Twitter Authentication  for Spring Security'
+    String title = 'Twitter Authentication for Spring Security'
     String description = 'Twitter authentication support for the Spring Security plugin.'
 
 

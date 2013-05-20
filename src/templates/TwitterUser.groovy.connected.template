@@ -2,15 +2,16 @@ ${userImport}
 
 class ${domainClassName} {
 
-    int uid
-    String screenName
+    Long twitterId
+    String username
 
     String tokenSecret
     String token
 
-	  static belongsTo = [${userConnectionProperty}: ${userClassName}]
+    static belongsTo = [${userConnectionProperty}: ${userClassName}]
 
-	  static constraints = {
-		  uid unique: true
-	  }
+    static constraints = {
+        twitterId(unique: true, nullable: false)
+        username(nullable: false, blank: false)
+    }
 }

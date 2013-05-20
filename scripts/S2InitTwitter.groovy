@@ -114,9 +114,9 @@ private void configure() {
 private void copyData() {
 	copyFile "$templateDir/spring-security-twitter.messages.properties.template",
 		"$appDir/i18n/spring-security-twitter.messages.properties"
-    copyFile "$resourceDir/sign-in-with-twitter-d.png",
+    copyFile "$springSecurityTwitterPluginDir/web-app/images/sign-in-with-twitter-d.png",
         "$webDir/images/sign-in-with-twitter-d.png"
-    copyFile "$resourceDir/twitter-auth.css",
+    copyFile "$springSecurityTwitterPluginDir/web-app/css/twitter-auth.css",
         "$webDir/css/twitter-auth.css"
 
 	generateFile "$templateDir/TwitterUser.groovy.connected.template",

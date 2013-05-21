@@ -59,15 +59,15 @@ private void fillConfig() {
 
     code = "twitter.app.key"
     ant.input(message: "Enter your Twitter API Key", addproperty: code)
-    config['app.key'] = ant.antProject.properties[code]
+    config['key'] = ant.antProject.properties[code]
 
     code = "twitter.app.consumerKey"
     ant.input(message: "Enter your Twitter API Consumer Key", addproperty: code, defaultvalue: config['app.key'])
-    config['app.consumerKey'] = ant.antProject.properties[code]
+    config['consumerKey'] = ant.antProject.properties[code]
 
     code = "twitter.app.consumerSecret"
     ant.input(message: "Enter your Twitter API Consumer Secret", addproperty: code)
-    config['app.consumerSecret'] = ant.antProject.properties[code]
+    config['consumerSecret'] = ant.antProject.properties[code]
 
     def configFile = new File(appDir, 'conf/Config.groovy')
     if (configFile.exists()) {
@@ -114,9 +114,9 @@ private void configure() {
 private void copyData() {
 	copyFile "$templateDir/spring-security-twitter.messages.properties.template",
 		"$appDir/i18n/spring-security-twitter.messages.properties"
-    copyFile "$resourceDir/sign-in-with-twitter-d.png",
+    copyFile "$springSecurityTwitterPluginDir/web-app/images/sign-in-with-twitter-d.png",
         "$webDir/images/sign-in-with-twitter-d.png"
-    copyFile "$resourceDir/twitter-auth.css",
+    copyFile "$springSecurityTwitterPluginDir/web-app/css/twitter-auth.css",
         "$webDir/css/twitter-auth.css"
 
 	generateFile "$templateDir/TwitterUser.groovy.connected.template",

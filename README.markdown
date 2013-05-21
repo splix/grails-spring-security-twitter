@@ -17,7 +17,7 @@ Add dependency into `BuildConfig.groovy`:
 ```
 plugins {
     compile ":spring-security-core:1.2.7.2"
-    compile ":spring-security-twitter:0.5"
+    compile ":spring-security-twitter:0.5.2"
 }
 ```
 
@@ -30,7 +30,7 @@ How to use
 Authors
 -------
 
-[Igor Artamonov](http://igorartamonov.com) and [The 6 Hours](http://the6hours.com)
+[Igor Artamonov](http://igorartamonov.com), [The 6 Hours](http://the6hours.com)
 
 License
 -------

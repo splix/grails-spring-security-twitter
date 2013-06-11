@@ -45,6 +45,7 @@ class SpringSecurityTwitterGrailsPlugin {
     String title = 'Twitter Authentication for Spring Security'
     String description = 'Twitter authentication support for the Spring Security plugin.'
 
+    def organization = [ name: "The 6 Hours", url: "http://the6hours.com/" ]
 
     def doWithSpring = {
         def conf = SpringSecurityUtils.securityConfig

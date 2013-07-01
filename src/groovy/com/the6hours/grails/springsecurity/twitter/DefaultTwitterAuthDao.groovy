@@ -264,7 +264,7 @@ class DefaultTwitterAuthDao implements TwitterAuthDao, InitializingBean {
     void afterPropertiesSet() throws Exception {
         log.debug("Init default Twitter Authentication Dao...")
         if (coreUserDetailsService != null) {
-            if (!(coreUserDetailsService instanceof GormUserDetailsService && coreUserDetailsService.respondsTo('createUserDetails'))) {
+            if (coreUserDetailsService.respondsTo('createUserDetails')) {
                 log.warn("UserDetailsService from spring-security-core don't have method 'createUserDetails()'")
                 coreUserDetailsService = null
             }

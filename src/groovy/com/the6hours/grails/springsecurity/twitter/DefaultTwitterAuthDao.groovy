@@ -4,8 +4,10 @@ import org.apache.log4j.Logger
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.plugins.springsecurity.GormUserDetailsService
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.context.ApplicationContext
+import org.springframework.context.ApplicationContextAware
 import org.springframework.dao.OptimisticLockingFailureException
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.GrantedAuthorityImpl
@@ -16,7 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails
  * @author Igor Artamonov (http://igorartamonov.com)
  * @since 21.12.12
  */
-class DefaultTwitterAuthDao implements TwitterAuthDao, InitializingBean {
+class DefaultTwitterAuthDao implements TwitterAuthDao, InitializingBean, ApplicationContextAware, GrailsApplicationAware {
 
     private static def log = Logger.getLogger(this)
 
@@ -263,6 +265,12 @@ class DefaultTwitterAuthDao implements TwitterAuthDao, InitializingBean {
 
     void afterPropertiesSet() throws Exception {
         log.debug("Init default Twitter Authentication Dao...")
+        if (twitterAuthService == null) {
+            if (applicationContext.containsBean('twitterAuthService')) {
+                log.debug("Use provided twitterAuthService")
+                twitterAuthService = applicationContext.getBean('twitterAuthService')
+            }
+        }
         if (coreUserDetailsService != null) {
             if (coreUserDetailsService.respondsTo('createUserDetails')) {
                 log.warn("UserDetailsService from spring-security-core don't have method 'createUserDetails()'")

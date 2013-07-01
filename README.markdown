@@ -17,14 +17,14 @@ Add dependency into `BuildConfig.groovy`:
 ```
 plugins {
     compile ":spring-security-core:1.2.7.2"
-    compile ":spring-security-twitter:0.5.2"
+    compile ":spring-security-twitter:0.5.3"
 }
 ```
 
 How to use
 ----------
 
-  * Documentation - http://splix.github.com/grails-spring-security-twitter
+  * Documentation - http://splix.github.io/grails-spring-security-twitter
   * Example app - https://github.com/splix/grails-twitter-authentication-example
 
 Authors

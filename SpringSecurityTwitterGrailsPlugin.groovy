@@ -62,8 +62,15 @@ class SpringSecurityTwitterGrailsPlugin {
         conf = SpringSecurityUtils.securityConfig
 
 		String twitterDaoName = conf?.twitter?.dao ?: null
+        boolean _autoCreate = true
+        def _autoCreateConf = getConfigValue(conf, 'twitter.autoCreate.active')
+        if (_autoCreateConf != null) {
+            _autoCreate = _autoCreateConf as Boolean
+        }
+
         if (twitterDaoName == null) {
 			twitterDaoName = 'twitterAuthDao'
+            List<String> _roles = _autoCreate ? getAsStringList(conf.twitter.autoCreate.roles, 'twitter.autoCreate.roles') : []
             twitterAuthDao(DefaultTwitterAuthDao) {
                 twitterUserClassName = conf.twitter.domain.classname
                 appUserConnectionPropertyName = conf.twitter.domain.connectionPropertyName
@@ -73,6 +80,8 @@ class SpringSecurityTwitterGrailsPlugin {
 
                 coreUserDetailsService = ref('userDetailsService')
                 grailsApplication = ref('grailsApplication')
+
+                defaultRoleNames = _roles
             }
 		} else {
 			log.info("Using provided Twitter Auth DAO bean: $twitterDaoName")
@@ -85,11 +94,6 @@ class SpringSecurityTwitterGrailsPlugin {
         } else {
             SpringSecurityUtils.registerProvider 'twitterAuthProvider'
             twitterAuthProviderName = 'twitterAuthProvider'
-            boolean _autoCreate = true
-            def _autoCreateConf = getConfigValue(conf, 'twitter.autoCreate.active')
-            if (_autoCreateConf != null) {
-                _autoCreate = _autoCreateConf as Boolean
-            }
             twitterAuthProvider(TwitterAuthProvider) {
                 authDao = ref(twitterDaoName)
                 createNew = _autoCreate
@@ -149,6 +153,21 @@ class SpringSecurityTwitterGrailsPlugin {
         }
         if (key) {
             return conf.get(key)
+        }
+        return null
+    }
+
+    private List<String> getAsStringList(def conf, String paramHumanName) {
+        def raw = conf
+
+        if (raw == null) {
+            log.error("Invalid $paramHumanName filters configuration: '$raw'")
+        } else if (raw instanceof Collection) {
+            return raw.collect { it.toString() }
+        } else if (raw instanceof String) {
+            return raw.split(',').collect { it.trim() }
+        } else {
+            log.error("Invalid $paramHumanName filters configuration, invalid value type: '${raw.getClass()}'. Value should be defined as a Collection or String (comma separated)")
         }
         return null
     }

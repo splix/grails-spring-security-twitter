@@ -13,6 +13,8 @@ import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.GrantedAuthorityImpl
 import org.springframework.security.core.userdetails.UserDetails
 
+import java.lang.reflect.Method
+
 /**
  *
  * @author Igor Artamonov (http://igorartamonov.com)
@@ -272,9 +274,12 @@ class DefaultTwitterAuthDao implements TwitterAuthDao, InitializingBean, Applica
             }
         }
         if (coreUserDetailsService != null) {
-            if (coreUserDetailsService.respondsTo('createUserDetails')) {
-                log.warn("UserDetailsService from spring-security-core don't have method 'createUserDetails()'")
+            Method m = coreUserDetailsService.class.declaredMethods.find { it.name == 'createUserDetails' }
+            if (!m) {
+                log.warn("UserDetailsService from spring-security-core don't have method 'createUserDetails()'. Class: ${coreUserDetailsService.getClass()}")
                 coreUserDetailsService = null
+            } else {
+                m.setAccessible(true)
             }
         } else {
             log.warn("No UserDetailsService bean from spring-security-core")

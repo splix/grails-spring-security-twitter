@@ -1,6 +1,6 @@
 package com.the6hours.grails.springsecurity.twitter
 
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import grails.plugin.springsecurity.SpringSecurityUtils
 import org.codehaus.groovy.grails.web.mapping.LinkGenerator
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter
 import org.springframework.security.core.Authentication

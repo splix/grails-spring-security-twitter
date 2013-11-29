@@ -100,7 +100,7 @@ class TwitterAuthFilter extends AbstractAuthenticationProcessingFilter {
 
         OAuthToken requestToken = oauth.fetchRequestToken(url, null)
         request.session.setAttribute(REQUEST_TOKEN, requestToken)
-        String authorizeUrl = oauth.buildAuthorizeUrl(requestToken.value, (OAuth1Parameters) OAuth1Parameters.NONE)
+        String authorizeUrl = oauth.buildAuthenticateUrl(requestToken.value, (OAuth1Parameters) OAuth1Parameters.NONE)
         response.sendRedirect(authorizeUrl)
     }
 

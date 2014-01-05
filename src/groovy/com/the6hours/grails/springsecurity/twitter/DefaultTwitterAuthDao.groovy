@@ -291,7 +291,9 @@ class DefaultTwitterAuthDao implements TwitterAuthDao, InitializingBean, Applica
             }
         }
         if (AppUser == null) {
-            AppUser = grailsApplication.getDomainClass(appUserClassName)?.clazz
+            if (appUserClassName && appUserClassName.length() > 0) {
+                AppUser = grailsApplication.getDomainClass(appUserClassName)?.clazz
+            }
             if (!AppUser) {
                 log.error("Can't find domain: $appUserClassName")
             }

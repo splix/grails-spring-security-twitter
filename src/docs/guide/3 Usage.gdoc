@@ -9,20 +9,20 @@ h3. Install plugin
 Add dependencies into @BuildConfig.groovy@:
 
 {code}
-    plugins {
-        runtime "org.grails.plugins:resources:1.1.6"
-        compile "org.grails.plugins:spring-security-core:1.2.7.2"
+plugins {
+    runtime "org.grails.plugins:resources:1.1.6"
+    compile "org.grails.plugins:spring-security-core:2.0-RC2"
 
-        compile "org.grails.plugins:spring-security-twitter:0.5"
-    }
+    compile "org.grails.plugins:spring-security-twitter:0.6"
+}
 {code}
 
 h3. Setup Twitter credentials
 
 Put your Twitter API Consumer Key/Secret into @Config.groovy@:
 {code}
-grails.plugins.springsecurity.twitter.consumerKey=...
-grails.plugins.springsecurity.twitter.consumerSecret=...
+grails.plugin.springsecurity.twitter.consumerKey=..
+grails.plugin.springsecurity.twitter.consumerSecret=..
 {code}
 
 h3. Create domain class for your user
@@ -68,7 +68,7 @@ class TwitterUser  {
 The plugin is configured for @TwitterUser@ class name by default. But you could use different name (or use package) for domain class,
 for example @com.company.UserWithTwitter@, that you should configure at @Config.groovy@ at this case:
 {code}
-grails.plugins.springsecurity.twitter.domain.classname='com.company.UserWithTwitter'
+grails.plugin.springsecurity.twitter.domain.classname='com.company.UserWithTwitter'
 {code}
 
 

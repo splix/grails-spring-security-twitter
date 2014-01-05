@@ -38,7 +38,7 @@ class SpringSecurityTwitterGrailsPlugin {
     def scm = [ url: "https://github.com/splix/grails-spring-security-twitter" ]
     def documentation = "http://splix.github.io/grails-spring-security-twitter"
 
-	def observe = ["springSecurityCore"]
+    def observe = ["springSecurityCore"]
 
     String author = 'Igor Artamonov'
     String authorEmail = 'igor@artamonov.ru'
@@ -61,7 +61,7 @@ class SpringSecurityTwitterGrailsPlugin {
         // have to get again after overlaying DefaultTwitterSecurityConfig
         conf = SpringSecurityUtils.securityConfig
 
-		String twitterDaoName = conf?.twitter?.dao ?: null
+        String twitterDaoName = conf?.twitter?.dao ?: null
         boolean _autoCreate = true
         def _autoCreateConf = getConfigValue(conf, 'twitter.autoCreate.active')
         if (_autoCreateConf != null) {
@@ -69,7 +69,7 @@ class SpringSecurityTwitterGrailsPlugin {
         }
 
         if (twitterDaoName == null) {
-			twitterDaoName = 'twitterAuthDao'
+            twitterDaoName = 'twitterAuthDao'
             List<String> _roles = _autoCreate ? getAsStringList(conf.twitter.autoCreate.roles, 'twitter.autoCreate.roles') : []
             twitterAuthDao(DefaultTwitterAuthDao) {
                 twitterUserClassName = conf.twitter.domain.classname
@@ -83,11 +83,11 @@ class SpringSecurityTwitterGrailsPlugin {
 
                 defaultRoleNames = _roles
             }
-		} else {
-			log.info("Using provided Twitter Auth DAO bean: $twitterDaoName")
-		}
+        } else {
+            log.info("Using provided Twitter Auth DAO bean: $twitterDaoName")
+        }
 
-		String twitterAuthProviderName = getConfigValue(conf, 'twitter.provider', 'twitter.bean.provider')
+        String twitterAuthProviderName = getConfigValue(conf, 'twitter.provider', 'twitter.bean.provider')
         if (twitterAuthProviderName != null) {
             log.info("Use provided authentication provider: $twitterAuthProviderName")
             SpringSecurityUtils.registerProvider twitterAuthProviderName
@@ -100,7 +100,7 @@ class SpringSecurityTwitterGrailsPlugin {
             }
         }
 
-		String twitterAuthFilterName = getConfigValue(conf, 'twitter.filter', 'twitter.bean.filter')
+        String twitterAuthFilterName = getConfigValue(conf, 'twitter.filter', 'twitter.bean.filter')
         if (twitterAuthFilterName != null) {
             log.info("Use provided authentication filter: $twitterAuthFilterName")
             SpringSecurityUtils.registerFilter twitterAuthFilterName, SecurityFilterPosition.OPENID_FILTER

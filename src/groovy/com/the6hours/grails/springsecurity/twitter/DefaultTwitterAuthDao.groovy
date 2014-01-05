@@ -2,8 +2,7 @@ package com.the6hours.grails.springsecurity.twitter
 
 import org.apache.log4j.Logger
 import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.codehaus.groovy.grails.plugins.springsecurity.GormUserDetailsService
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import grails.plugin.springsecurity.SpringSecurityUtils
 import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.context.ApplicationContext

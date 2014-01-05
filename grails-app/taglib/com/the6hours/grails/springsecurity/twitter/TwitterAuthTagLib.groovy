@@ -1,6 +1,6 @@
 package com.the6hours.grails.springsecurity.twitter
 
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import grails.plugin.springsecurity.SpringSecurityUtils
 
 /**
  * Twitter Auth tags

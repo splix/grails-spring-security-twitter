@@ -1,8 +1,8 @@
 import com.the6hours.grails.springsecurity.twitter.DefaultTwitterAuthDao
 import com.the6hours.grails.springsecurity.twitter.TwitterAuthProvider
 import com.the6hours.grails.springsecurity.twitter.TwitterAuthFilter
-import org.codehaus.groovy.grails.plugins.springsecurity.SecurityFilterPosition
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import grails.plugin.springsecurity.SecurityFilterPosition
+import grails.plugin.springsecurity.SpringSecurityUtils
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler
 
 /* Copyright 2006-2010 the original author or authors.
@@ -26,7 +26,7 @@ class SpringSecurityTwitterGrailsPlugin {
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "2.0.0 > *"
 
-    Map dependsOn = ['springSecurityCore': '1.2.7.2 > *']
+    Map dependsOn = ['springSecurityCore': '2.0-RC2 > *']
     def license = 'APACHE'
 
     // resources that are excluded from plugin packaging

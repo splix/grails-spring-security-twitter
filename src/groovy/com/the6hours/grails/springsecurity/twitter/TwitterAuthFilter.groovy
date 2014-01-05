@@ -1,6 +1,6 @@
 package com.the6hours.grails.springsecurity.twitter
 
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import grails.plugin.springsecurity.SpringSecurityUtils
 import org.codehaus.groovy.grails.web.mapping.LinkGenerator
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter
 import org.springframework.security.core.Authentication
@@ -100,7 +100,7 @@ class TwitterAuthFilter extends AbstractAuthenticationProcessingFilter {
 
         OAuthToken requestToken = oauth.fetchRequestToken(url, null)
         request.session.setAttribute(REQUEST_TOKEN, requestToken)
-        String authorizeUrl = oauth.buildAuthorizeUrl(requestToken.value, (OAuth1Parameters) OAuth1Parameters.NONE)
+        String authorizeUrl = oauth.buildAuthenticateUrl(requestToken.value, (OAuth1Parameters) OAuth1Parameters.NONE)
         response.sendRedirect(authorizeUrl)
     }
 

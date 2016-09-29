@@ -46,7 +46,7 @@ grails.project.dependency.resolution = {
                      'org.springframework.core',
                      'org.springframework.web'
         }
-        compile 'org.springframework.social:spring-social-twitter:1.0.3.RELEASE'
+        compile 'org.springframework.social:spring-social-twitter:1.1.0.RELEASE'
     }
 
     plugins {
